@@ -6,12 +6,7 @@ A medieval illuminated manuscript-styled website for the Insular Church of Mvind
 
 **🔗 [Visit the Live Site](https://jcalepos146.github.io/Insular-Church-of-Mvindicraft/)**
 
-## Deploying to GitHub Pages
 
-1. Upload the full contents of this folder (including `index.html`, `docs/`, and this README) to the repository.
-2. Go to **Settings → Pages**.
-3. Under **Source**, select **Deploy from a branch**, choose `main`, root `/`.
-4. Click **Save**. The site is live at https://jcalepos146.github.io/Insular-Church-of-Mvindicraft/
 
 ## Adding PDF Documents
 
