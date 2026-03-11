@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Insular Church of Mvindicraft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=MedievalSharp&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --parchment: #f0e4c8;
+      --parchment-dark: #ddd0ad;
+      --parchment-deep: #c8b88a;
+      --ink: #2a1a0a;
+      --ink-light: #4a3520;
+      --gold: #c9a84c;
+      --gold-bright: #e8c84c;
+      --gold-dark: #9a7a2e;
+      --crimson: #8b1a1a;
+      --crimson-light: #a82e2e;
+      --forest: #2a4a2a;
+      --royal-blue: #1e3a6e;
+      --royal-blue-light: #2a4e8e;
+      --tier-gold: #b8960f;
+      --tier-purple: #5e3a7e;
+      --tier-navy: #1e2e5e;
+      --shadow-vellum: 0 4px 20px rgba(42, 26, 10, 0.3);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      background: var(--ink);
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ===== PARCHMENT TEXTURE ===== */
+    .parchment-bg {
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(139,119,80,0.03) 28px, rgba(139,119,80,0.03) 29px),
+        radial-gradient(ellipse at 20% 50%, rgba(210,180,120,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(180,150,100,0.1) 0%, transparent 50%),
+        linear-gradient(180deg, #ecdbb4 0%, var(--parchment) 15%, var(--parchment) 85%, #e0d0a8 100%);
+      position: relative;
+    }
+    .parchment-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== CELTIC BORDER ===== */
+    .celtic-border {
+      border: 4px solid var(--gold-dark);
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+      position: relative;
+    }
+    .celtic-border::before, .celtic-border::after {
+      content: '✦';
+      position: absolute;
+      font-size: 1.2rem;
+      color: var(--gold);
+      z-index: 2;
+    }
+    .celtic-border::before { top: -12px; left: -12px; }
+    .celtic-border::after { bottom: -12px; right: -12px; }
+
+    /* ===== NAVIGATION ===== */
+    nav {
+      background: linear-gradient(180deg, #1a0e04 0%, #2a1a0a 100%);
+      border-bottom: 3px solid var(--gold-dark);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0.5rem 1rem;
+    }
+    nav a {
+      color: var(--gold);
+      text-decoration: none;
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.55rem 1rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    nav a::after { content: '·'; position: absolute; right: -4px; color: var(--gold-dark); opacity: 0.5; }
+    nav a:last-child::after { content: none; }
+    nav a:hover { color: var(--gold-bright); text-shadow: 0 0 12px rgba(201,168,76,0.5); }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: radial-gradient(ellipse at 50% 40%, rgba(201,168,76,0.08) 0%, transparent 70%),
+        linear-gradient(180deg, #1a0e04 0%, #2a1a0a 30%, #1a0e04 100%);
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid var(--gold-dark);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L35 25 L55 30 L35 35 L30 55 L25 35 L5 30 L25 25 Z' fill='none' stroke='%23c9a84c' stroke-width='0.3' opacity='0.08'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .hero-cross {
+      font-size: 3rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      text-shadow: 0 0 30px rgba(201,168,76,0.4);
+      animation: glow 4s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 20px rgba(201,168,76,0.3); }
+      to { text-shadow: 0 0 40px rgba(201,168,76,0.6), 0 0 80px rgba(201,168,76,0.2); }
+    }
+    .hero h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .hero .subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.8rem, 1.8vw, 1rem);
+      color: var(--parchment-deep);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-top: 0.8rem;
+    }
+    .hero .divider {
+      width: 220px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 1.5rem auto;
+    }
+    .hero .verse {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--parchment-dark);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+    .hero-meta {
+      margin-top: 1.2rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      color: var(--gold-dark);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    /* ===== MAIN ===== */
+    main { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ===== SECTIONS ===== */
+    .section {
+      margin: 3rem 0;
+      padding: 2.5rem 3rem;
+      border-radius: 2px;
+      box-shadow: var(--shadow-vellum);
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .section.visible { opacity: 1; transform: translateY(0); }
+
+    .section h2 {
+      font-family: 'Cinzel Decorative', serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: var(--crimson);
+      text-align: center;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.06em;
+    }
+    .section h3 {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: 1.15rem;
+      color: var(--ink-light);
+      margin: 1.8rem 0 0.6rem;
+    }
+    .section-divider {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+      margin: 0.8rem auto 1.8rem;
+    }
+    .section p {
+      margin-bottom: 1rem;
+      text-align: justify;
+      text-indent: 1.5em;
+    }
+
+    .section .dropcap p:first-of-type::first-letter {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 3.2em;
+      float: left;
+      line-height: 0.8;
+      margin: 0.05em 0.12em 0 0;
+      color: var(--crimson);
+      text-shadow: 1px 1px 0 var(--gold);
+    }
+
+    /* ===== BELIEFS LIST ===== */
+    .beliefs-list {
+      list-style: none;
+      padding: 0;
+      margin: 1.5rem 0;
+    }
+    .beliefs-list li {
+      padding: 0.8rem 0 0.8rem 2.2rem;
+      position: relative;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+    }
+    .beliefs-list li::before {
+      content: '✦';
+      position: absolute;
+      left: 0.4rem;
+      top: 0.85rem;
+      color: var(--gold-dark);
+      font-size: 0.9rem;
+    }
+    .beliefs-list li strong {
+      font-family: 'Cinzel', serif;
+      color: var(--crimson);
+      font-weight: 600;
+    }
+
+    /* ===== HIERARCHY TABLE ===== */
+    .hierarchy-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.92rem;
+    }
+    .hierarchy-table thead { background: var(--ink); }
+    .hierarchy-table th {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      padding: 0.7rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+    .hierarchy-table td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      vertical-align: top;
+    }
+    .hierarchy-table tbody tr:hover { background: rgba(201,168,76,0.08); }
+    .primate-rank {
+      font-family: 'Cinzel', serif;
+      color: var(--crimson);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ===== CANONS ===== */
+    .canon-block {
+      margin: 1.5rem 0;
+      padding: 1.2rem 1.5rem;
+      border-left: 3px solid var(--gold-dark);
+      background: rgba(201,168,76,0.04);
+    }
+    .canon-block h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--crimson);
+      margin-bottom: 0.1rem;
+    }
+    .canon-block .canon-sub {
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      color: var(--gold-dark);
+      font-style: italic;
+      margin-bottom: 0.5rem;
+    }
+    .canon-block p { text-indent: 0; font-size: 0.95rem; }
+
+    /* ===== CALENDAR SECTION ===== */
+    .season-block {
+      margin: 2rem 0 1.5rem;
+      padding: 1.2rem 1.5rem 0.5rem;
+      border-top: 3px solid var(--gold-dark);
+    }
+    .season-block h3 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.3rem;
+      color: var(--crimson);
+      margin: 0 0 0.2rem;
+    }
+    .season-block .season-desc {
+      font-style: italic;
+      color: var(--ink-light);
+      font-size: 0.92rem;
+      margin-bottom: 1rem;
+      text-indent: 0;
+    }
+
+    .feast-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 1rem;
+      font-size: 0.88rem;
+    }
+    .feast-table thead { background: var(--ink); }
+    .feast-table th {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      padding: 0.5rem 0.6rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .feast-table td {
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      vertical-align: top;
+      line-height: 1.4;
+    }
+    .feast-table tbody tr:hover { background: rgba(201,168,76,0.06); }
+    .tier-badge {
+      display: inline-block;
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0.1em 0.5em;
+      border-radius: 2px;
+      color: #fff;
+    }
+    .tier-i { background: var(--tier-gold); }
+    .tier-ii { background: var(--tier-purple); }
+    .tier-iii { background: var(--tier-navy); }
+    .day-num {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--crimson);
+      white-space: nowrap;
+    }
+
+    /* ===== LIBRARY ===== */
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .library-card {
+      background: linear-gradient(160deg, #faf3e0 0%, var(--parchment) 100%);
+      border: 2px solid var(--gold-dark);
+      padding: 1.4rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .library-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--crimson), var(--gold), var(--crimson));
+    }
+    .library-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(42,26,10,0.3);
+      border-color: var(--gold);
+    }
+    .library-card .card-icon { font-size: 2rem; margin-bottom: 0.6rem; }
+    .library-card h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+    .library-card .card-desc { font-size: 0.88rem; color: var(--ink-light); line-height: 1.5; }
+    .library-card .card-meta {
+      margin-top: 0.8rem;
+      font-size: 0.78rem;
+      color: var(--parchment-deep);
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ===== PDF VIEWER ===== */
+    .pdf-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,6,2,0.88);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      animation: fadeIn 0.3s ease;
+    }
+    .pdf-overlay.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .pdf-viewer-container {
+      background: var(--parchment);
+      border: 4px solid var(--gold-dark);
+      outline: 2px solid var(--gold);
+      outline-offset: 4px;
+      width: 100%;
+      max-width: 900px;
+      height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 60px rgba(0,0,0,0.5);
+    }
+    .pdf-viewer-header {
+      background: linear-gradient(180deg, #2a1a0a, #1a0e04);
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--gold-dark);
+      flex-shrink: 0;
+    }
+    .pdf-viewer-header h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+    .pdf-close-btn {
+      background: none;
+      border: 1px solid var(--gold-dark);
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      padding: 0.3rem 0.8rem;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: all 0.2s;
+    }
+    .pdf-close-btn:hover { background: var(--gold-dark); color: var(--ink); }
+    .pdf-viewer-body { flex: 1; overflow: hidden; }
+    .pdf-viewer-body iframe { width: 100%; height: 100%; border: none; }
+    .pdf-viewer-body .pdf-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--ink-light);
+      text-align: center;
+      padding: 2rem;
+    }
+    .pdf-placeholder .placeholder-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.4; }
+    .pdf-placeholder p { font-size: 1.1rem; max-width: 400px; line-height: 1.6; }
+    .pdf-placeholder code {
+      display: block;
+      background: rgba(42,26,10,0.08);
+      padding: 1rem 1.5rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      border: 1px dashed var(--gold-dark);
+      font-family: monospace;
+      text-align: left;
+      color: var(--ink-light);
+    }
+
+    /* ===== CONTACT ===== */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .contact-card {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      border: 1px solid rgba(201,168,76,0.3);
+      background: rgba(201,168,76,0.04);
+    }
+    .contact-card .c-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .contact-card h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      color: var(--crimson);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+    }
+    .contact-card p { font-size: 0.92rem; color: var(--ink-light); text-indent: 0 !important; text-align: center !important; }
+    .contact-card a {
+      color: var(--royal-blue);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .contact-card a:hover { border-bottom-color: var(--royal-blue); }
+
+    /* ===== SIGNATORIES ===== */
+    .signatories {
+      columns: 2;
+      column-gap: 2rem;
+      margin: 1rem 0;
+    }
+    .sig-entry {
+      break-inside: avoid;
+      padding: 0.3rem 0;
+      font-size: 0.9rem;
+    }
+    .sig-entry .sig-title {
+      font-size: 0.78rem;
+      color: var(--gold-dark);
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.04em;
+    }
+    .sig-entry .sig-name { color: var(--ink); font-weight: 500; }
+
+    /* ===== INLINE NOTE ===== */
+    .note-box {
+      background: rgba(139,26,26,0.05);
+      border: 1px solid rgba(139,26,26,0.2);
+      border-left: 3px solid var(--crimson);
+      padding: 1rem 1.2rem;
+      margin: 1.2rem 0;
+      font-size: 0.92rem;
+    }
+    .note-box p { text-indent: 0; margin-bottom: 0.5rem; }
+    .note-box p:last-child { margin-bottom: 0; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: linear-gradient(180deg, #1a0e04, #0e0804);
+      border-top: 3px solid var(--gold-dark);
+      text-align: center;
+      padding: 2.5rem 2rem;
+      margin-top: 3rem;
+    }
+    footer .footer-cross { color: var(--gold-dark); font-size: 1.5rem; margin-bottom: 0.8rem; }
+    footer p {
+      font-family: 'Cinzel', serif;
+      color: var(--parchment-deep);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 2;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 700px) {
+      .section { padding: 1.8rem 1.3rem; }
+      nav a { padding: 0.4rem 0.5rem; font-size: 0.72rem; }
+      .hero { padding: 3rem 1.5rem 2.5rem; }
+      .library-grid { grid-template-columns: 1fr; }
+      .pdf-overlay { padding: 0.5rem; }
+      .pdf-viewer-container { height: 95vh; }
+      .signatories { columns: 1; }
+      .feast-table { font-size: 0.8rem; }
+      .feast-table th, .feast-table td { padding: 0.35rem 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#history">History</a>
+      <a href="#doctrine">Doctrine</a>
+      <a href="#canons">Canons</a>
+      <a href="#calendar">Calendar</a>
+      <a href="#library">Scriptorium</a>
+      <a href="#community">Community</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-cross">☩</div>
+    <h1>The Insular Church<br>of Mvindicraft</h1>
+    <div class="divider"></div>
+    <p class="subtitle">Pre-Tridentine Insular Rite · Saints Recognised Before A.D. 1550</p>
+    <p class="verse">"Our entire reason for existing is because the rest of the western churches<br>lack valid holy orders."<br>— Abbot Nildrif of Armagh</p>
+    <p class="hero-meta">Mvindicraft Founded 11 Oct 2020 · Server Launch 20 Feb 2026 · Anno Dantavius LXXI</p>
+  </header>
+
+  <!-- MAIN -->
+  <main class="parchment-bg">
+
+    <!-- ==================== HISTORY ==================== -->
+    <section id="history" class="section celtic-border">
+      <h2>History &amp; Origins</h2>
+      <div class="section-divider"></div>
+      <div class="dropcap">
+        <p>
+          The Insular Church of Mvindicraft was born from a crisis of legitimacy. Across the first four versions of the Mvindicraft server, a valid line of Apostolic Succession was maintained from Pope Geerus IX through to Pope Anastasius III. The Petrine office was held by men who had been duly ordained, and the sacraments flowed through an unbroken chain of consecration stretching back to the founding of the server in the Year of Our Lord 2020.
+        </p>
+        <p>
+          When International Organisations were established in a later version of Mvindicraft, the political landscape shifted. The Lombard King of Italy — a temporal ruler whose kingdom is now defunct and powerless — took it upon himself to appoint a new pope: Pope John I. John I was neither an ordained bishop nor even a priest. His elevation was a purely political act, proclaimed by temporal authority rather than conferred through the sacrament of Holy Orders.
+        </p>
+      </div>
+
+      <h3>The Great Schism of the West</h3>
+      <p>
+        Because John I lacked valid ordination, every appointment he subsequently made — to the cardinalate, the episcopacy, and the priesthood — was likewise invalid. Grace cannot flow through a broken vessel. This crisis of Holy Orders produced a schism in which two rival claimants emerged: <strong>Pope Clement VII</strong>, eerily named after the ill-fated pontiff who in real history oversaw the surge of the Reformation and the Sack of Rome in 1527; and <strong>Pope John Paul I of Malta</strong>, who quickly gathered a host of nations pledging allegiance to his cause. At one point, France even attempted to create a third pope in Avignon, recalling the medieval schism, though this effort was struck down.
+      </p>
+      <p>
+        Neither Clement VII nor John Paul I possesses valid ordination or consecration. Both descend from the line of John I, who was never a priest. As the Abbot of Armagh declared plainly: <em>"We are sedevacantists. Since none of them have valid holy orders, we currently see there as being no pope."</em>
+      </p>
+
+      <h3>The Founding of the Insular Church</h3>
+      <p>
+        In the face of this collapse, the faithful of Britain and Ireland gathered to preserve the ancient tradition. Drawing upon the heritage of the pre-Tridentine Insular Rite — the traditions of Saints Patrick, Columba, Aidan, Cuthbert, Hilda, and Bede — the Insular Church was established under the governance of a College of Five Primates, headed by the See of Armagh as first among equals. The First Insular Synod was convened in the City of Armagh, where the Canons that now govern the Church were promulgated and signed by every Archbishop, Bishop, and Abbot present.
+      </p>
+      <p>
+        The Insular Church holds to the doctrine of Apostolic Succession and recognises the authority of Peter as given in Matthew 16:18–19. It is precisely because of this fidelity that it cannot accept a pope who was never ordained. The Petrine See is long since vacant — and until a validly consecrated Bishop of Rome can be recognised, the Church governs itself through synodal authority, in communion with the Patriarchate of Constantinople.
+      </p>
+    </section>
+
+    <!-- ==================== DOCTRINE ==================== -->
+    <section id="doctrine" class="section celtic-border">
+      <h2>Beliefs &amp; Doctrine</h2>
+      <div class="section-divider"></div>
+      <div class="dropcap">
+        <p>
+          The Insular Church holds to the undivided faith of the early centuries, guided by the Revised Confession of Faith contained within the Bishops' Book as written by Archbishop Corpo MacAirthir. The Church recognises only those saints canonised before A.D. 1550 and celebrates the liturgy according to the Pre-Tridentine Insular Rite.
+        </p>
+      </div>
+
+      <ul class="beliefs-list">
+        <li><strong>Apostolic Succession</strong> — The Church holds that valid Holy Orders require an unbroken chain of consecration from the Apostles. Since the Western claimants to the papacy descend from John I — who was never ordained — their orders are invalid. The Petrine See is vacant.</li>
+        <li><strong>Sedevacantism</strong> — There is at present no valid pope. Neither Clement VII nor John Paul I of Malta holds legitimate claim to the Chair of Peter. The Church awaits a validly consecrated Bishop of Rome.</li>
+        <li><strong>The Authority of Scripture</strong> — The Douai-Rheims-Challoner Bible serves as the authoritative vernacular translation; the Latin Vulgate of St. Jerome as the official Latin text (Canon IX of the Synod of Armagh).</li>
+        <li><strong>Synodal Governance</strong> — In the absence of a valid pope, the highest authority of the Church rests with the Synod, convened by the Primates. Decisions require a two-thirds majority; dogmatic questions demand the unanimous consent of all five Primates.</li>
+        <li><strong>The College of Primates</strong> — Five Primatial Sees govern the Church in descending order of precedence: Armagh (first among equals), St. Davids, Canterbury, York, and St. Andrews.</li>
+        <li><strong>Communion with Constantinople</strong> — By virtue of longstanding historic ties and maintained apostolic succession, the Insular Church is in communion with the Patriarchate of Constantinople.</li>
+        <li><strong>Valid Ordination</strong> — For an ordination to be valid, it must have proper matter, proper formula, be performed by an ordained bishop of good standing, and carry proper intent of both parties (Canon XII).</li>
+        <li><strong>The Mvndi-Seasons Calendar</strong> — The Church orders its liturgical year according to a 28-day calendar of four seasons of seven days each, developed by Robert MacInerney and adopted by synodal decree.</li>
+      </ul>
+    </section>
+
+    <!-- ==================== CANONS ==================== -->
+    <section id="canons" class="section celtic-border">
+      <h2>Canons of the Synod of Armagh</h2>
+      <div class="section-divider"></div>
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light); margin-bottom:0.5rem;">
+        Promulgated by the First Insular Synod in the City of Armagh
+      </p>
+
+      <div class="canon-block">
+        <h4>Canon I</h4>
+        <p class="canon-sub">On the Convening of Synods</p>
+        <p>The right of convening a Synod rests solely with the Primates. Each Archbishop, Bishop, and Abbot has one vote. Temporal princes may attend and counsel but may not vote. Decisions require two-thirds majority; dogma and doctrine require unanimity of the Primates.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon II</h4>
+        <p class="canon-sub">On the Authority of Synods</p>
+        <p>Synods are the highest authority but address only matters pertaining to the entire Church. Diocesan matters are handled by the local bishop; provincial matters by the local temporal ruler and Primate.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon III</h4>
+        <p class="canon-sub">On the Hierarchy of Primacies</p>
+        <p>The Church is headed by a college of five Primates: Armagh (Primate of Ireland, first among equals), St. Davids (Primate of the Welsh), Canterbury (Primate of the Anglo-Saxons), York (Primate of the Danes), and St. Andrews (Primate of Scotland). No Primate later ordained may be regarded as senior to them.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon IV</h4>
+        <p class="canon-sub">On the Bishops and their Dioceses</p>
+        <p>No town shall have more than one bishop. Bishops alone ordain priests within their diocese and are responsible for the conduct, behaviour, and doctrinal soundness of all clergy in their jurisdiction.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon V</h4>
+        <p class="canon-sub">On the Role of Temporal Princes in Ecclesiastical Affairs</p>
+        <p>Kings and princes may present candidates for vacant Sees within their jurisdiction and raise objections on specific grounds (disobedience, heresy, banishment, treason, or schism), but final determination rests with the provincial Primate.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon VI</h4>
+        <p class="canon-sub">On Relations with other Communions</p>
+        <p>The Church is in communion with the Patriarchate of Constantinople. Members of churches in communion may traverse freely. Followers of false churches may trade but not settle permanently, and are prohibited from entering Insular churches or receiving sacraments unless they convert. Valid baptismal formulas are recognised.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon VII</h4>
+        <p class="canon-sub">On Relations with Heathens, Hebrews, and Mohammedans</p>
+        <p>Relations with heathens are left to local authorities. Hebrews may traverse and trade in peace. Mohammedans may trade, travel, and engage in diplomacy; relations are determined principally by their treatment of Christians in their own lands.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon VIII</h4>
+        <p class="canon-sub">On the Establishment of a Missionary Order</p>
+        <p>Since the Petrine See is long since vacant, the right of confirming any religious order — mendicant, missionary, or monastic — lies in the hands of the Five Primates.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon IX</h4>
+        <p class="canon-sub">On the matter of Holy Scripture</p>
+        <p>The Douai-Rheims-Challoner version serves as the authoritative vernacular Bible. The Vulgate of St. Jerome serves as the official Latin Bible of the Church.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon X</h4>
+        <p class="canon-sub">On the Adoption of the Mvndi-Seasons Calendar</p>
+        <p>The Church adopts the 28-day calendar based on Mvindicraft's seven-day seasons. All liturgical observances are ordered accordingly. Local saints' feasts are at the discretion of bishops.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon XI</h4>
+        <p class="canon-sub">On the Adoption of the Bishop's Book</p>
+        <p>The Revised Confession of Faith, written by Corpo MacAirthir and contained within the Bishops' Book, stands as the foundational teaching on all matters of doctrine and dogma.</p>
+      </div>
+      <div class="canon-block">
+        <h4>Canon XII</h4>
+        <p class="canon-sub">On the Ordination of Clergy from other Communions</p>
+        <p>Candidates must affirm the Insular Creed and denounce all false churches. The Synod must authorise ordination of prelates from false or schismatic churches. A valid ordination requires: proper matter, proper formula, an ordained bishop of good standing, and proper intent of both parties.</p>
+      </div>
+
+      <h3 style="text-align:center; margin-top:2rem;">Signatories</h3>
+      <p style="text-indent:0; text-align:center; font-style:italic; font-size:0.92rem; color:var(--ink-light);">
+        The Bishops and Abbots gathered in this Holy Synod of Armagh do confirm all the foregoing canons, in witness of which they affix their names.
+      </p>
+      <div class="signatories">
+        <div class="sig-entry">
+          <div class="sig-title">Archbishop of Armagh &amp; Primate of Ireland</div>
+          <div class="sig-name">✛ Corpo Ardmachanus</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Archbishop of St. Davids &amp; Primate of the Welsh</div>
+          <div class="sig-name">✛ Claudius Menevensis</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Archbishop of Canterbury &amp; Primate of the Anglo-Saxons</div>
+          <div class="sig-name">✛ Ellis Cantuariensis</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Archbishop of York &amp; Primate of the Danes</div>
+          <div class="sig-name">✛ Acutis Eboracensis</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Archbishop of St. Andrews &amp; Primate of Scotland</div>
+          <div class="sig-name">✛ Nathan S. Andreae</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Bishop of Dublin</div>
+          <div class="sig-name">✛ Brian Dublinensis</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Bishop of Caerdydd</div>
+          <div class="sig-name">✛ Daryl Cardiffensis</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Bishop of Caernarfon</div>
+          <div class="sig-name">✛ Thring Segontiensis</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Bishop of Chester</div>
+          <div class="sig-name">✛ Texas Cestrensis</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Bishop of Londres</div>
+          <div class="sig-name">✛ Yoresh Valkhor</div>
+        </div>
+        <div class="sig-entry">
+          <div class="sig-title">Abbot of Armagh &amp; Comarba Pátraic</div>
+          <div class="sig-name">✛ Nildrif Ardmachanus</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CALENDAR ==================== -->
+    <section id="calendar" class="section celtic-border">
+      <h2>The Sacred Calendar</h2>
+      <div class="section-divider"></div>
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light); margin-bottom:0.3rem;">
+        The 28-Day Liturgical Year · Four Seasons of Seven Days · Three Tiers of Feasts
+      </p>
+      <p style="text-indent:0; text-align:center; font-size:0.85rem; color:var(--ink-light); margin-bottom:1rem;">
+        Morning Mass &amp; Evening Mass daily · KJV Lectionary readings · Season order per MvnDate.py v0.2
+      </p>
+
+      <div class="note-box">
+        <p style="font-weight:600; color:var(--crimson);">Three-Tier Feast System</p>
+        <p><span class="tier-badge tier-i">TIER I</span> &nbsp;Primary Cycle — Solemnities and principal feasts. &nbsp; <span class="tier-badge tier-ii">TIER II</span> &nbsp;Secondary Cycle — Feasts and memorials. &nbsp; <span class="tier-badge tier-iii">TIER III</span> &nbsp;Tertiary Cycle — Memorials, Doctors, and lesser feasts.</p>
+      </div>
+
+      <!-- SPRING -->
+      <div class="season-block">
+        <h3>☩ Spring — Days 1–7</h3>
+        <p class="season-desc">Advent, Nativity &amp; Epiphany — Darkness before Dawn</p>
+        <table class="feast-table">
+          <thead><tr><th>Day</th><th><span class="tier-badge tier-i">I</span></th><th><span class="tier-badge tier-ii">II</span></th><th><span class="tier-badge tier-iii">III</span></th></tr></thead>
+          <tbody>
+            <tr><td class="day-num">1</td><td>The Annunciation of the Lord (Lady Day)</td><td>St Patrick, Apostle of Ireland</td><td>St Cuthbert of Lindisfarne</td></tr>
+            <tr><td class="day-num">2</td><td>The Nativity of the Lord (Christmas)</td><td>St Brigid of Kildare</td><td>St Hilary of Poitiers</td></tr>
+            <tr><td class="day-num">3</td><td>The Epiphany of the Lord</td><td>St Columba, Abbot of Iona</td><td>St Benedict Biscop</td></tr>
+            <tr><td class="day-num">4</td><td>The Presentation of the Lord (Candlemas)</td><td>St David, Patron of Wales</td><td>St Anskar, Apostle of the Norse</td></tr>
+            <tr><td class="day-num">5</td><td>Conversion of St Paul</td><td>St Brendan the Navigator</td><td>St Finan of Lindisfarne</td></tr>
+            <tr><td class="day-num">6</td><td>The Chair of St Peter</td><td>St Ninian, Apostle of the Picts</td><td>Sts Philip &amp; James</td></tr>
+            <tr><td class="day-num">7</td><td>Circumcision &amp; Holy Name of Jesus</td><td>St Aidan of Lindisfarne</td><td>St Enda of Aran</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SUMMER -->
+      <div class="season-block">
+        <h3>☩ Summer — Days 8–14</h3>
+        <p class="season-desc">Lent, Passion, Resurrection &amp; Pentecost — Death and New Life</p>
+        <table class="feast-table">
+          <thead><tr><th>Day</th><th><span class="tier-badge tier-i">I</span></th><th><span class="tier-badge tier-ii">II</span></th><th><span class="tier-badge tier-iii">III</span></th></tr></thead>
+          <tbody>
+            <tr><td class="day-num">8</td><td>Nativity of St John the Baptist</td><td>St Cedd of the East Saxons</td><td>St Anthony of Egypt</td></tr>
+            <tr><td class="day-num">9</td><td>Exaltation of the Holy Cross</td><td>St Alphege, Abp. of Canterbury, Martyr</td><td>Sts Perpetua &amp; Felicity</td></tr>
+            <tr><td class="day-num">10</td><td>All Souls: The Faithful Departed</td><td>St Oswald of Northumbria</td><td>St Sebastian, Martyr</td></tr>
+            <tr><td class="day-num">11</td><td>The Transfiguration of the Lord</td><td>St Mary Magdalene</td><td>St Ciaran of Clonmacnoise</td></tr>
+            <tr><td class="day-num">12</td><td>Sts Peter &amp; Paul, Apostles</td><td>St Barnabas, Apostle</td><td>St Columba (alt.)</td></tr>
+            <tr><td class="day-num">13</td><td>St Alban, Protomartyr of Britain</td><td>St Etheldreda, Abbess of Ely</td><td>St Keyne of Wales</td></tr>
+            <tr><td class="day-num">14</td><td>St George, Patron of England</td><td>St Wilfrid of York</td><td>St Cadoc of Wales</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- AUTUMN -->
+      <div class="season-block">
+        <h3>☩ Autumn — Days 15–21</h3>
+        <p class="season-desc">Trinity Season &amp; Insular Saints — Growth and Mission</p>
+        <table class="feast-table">
+          <thead><tr><th>Day</th><th><span class="tier-badge tier-i">I</span></th><th><span class="tier-badge tier-ii">II</span></th><th><span class="tier-badge tier-iii">III</span></th></tr></thead>
+          <tbody>
+            <tr><td class="day-num">15</td><td>All Saints</td><td>St Edmund, King &amp; Martyr</td><td>St Catherine of Alexandria</td></tr>
+            <tr><td class="day-num">16</td><td>St Gregory the Great</td><td>St Hilda of Whitby</td><td>St Dyfrig of Wales</td></tr>
+            <tr><td class="day-num">17</td><td>St Thomas Aquinas</td><td>St Bede the Venerable</td><td>St Anselm of Canterbury</td></tr>
+            <tr><td class="day-num">18</td><td>St Bernard of Clairvaux</td><td>St Hildegard of Bingen</td><td>St Samson of Dol</td></tr>
+            <tr><td class="day-num">19</td><td>St Boniface of Crediton, Martyr</td><td>St Theodore of Tarsus</td><td>St Dunstan of Canterbury</td></tr>
+            <tr><td class="day-num">20</td><td>St Andrew, Patron of Scotland</td><td>St Margaret of Scotland</td><td>Saints of Scotland</td></tr>
+            <tr><td class="day-num">21</td><td>Visitation of the Blessed Virgin Mary</td><td>St Winefride of Wales</td><td>St Etheldreda (alt.)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- WINTER -->
+      <div class="season-block">
+        <h3>☩ Winter — Days 22–28</h3>
+        <p class="season-desc">All Saints, Martyrs &amp; Eschatology — The Harvest Gathered In</p>
+        <table class="feast-table">
+          <thead><tr><th>Day</th><th><span class="tier-badge tier-i">I</span></th><th><span class="tier-badge tier-ii">II</span></th><th><span class="tier-badge tier-iii">III</span></th></tr></thead>
+          <tbody>
+            <tr><td class="day-num">22</td><td>Sts Michael, Gabriel &amp; Raphael</td><td>St Olaf of Norway</td><td>St Gall, Missionary</td></tr>
+            <tr><td class="day-num">23</td><td>St Stephen, First Martyr</td><td>St Alban (alt.)</td><td>St Lucy of Syracuse</td></tr>
+            <tr><td class="day-num">24</td><td>St John, Apostle &amp; Evangelist</td><td>St Mark, Evangelist</td><td>St Luke, Evangelist</td></tr>
+            <tr><td class="day-num">25</td><td>Sts Simon &amp; Jude, Apostles</td><td>St Thomas, Apostle</td><td>St Bartholomew, Apostle</td></tr>
+            <tr><td class="day-num">26</td><td>Holy Innocents, Martyrs</td><td>St Nicholas of Myra</td><td>St Finnian of Clonard</td></tr>
+            <tr><td class="day-num">27</td><td>St Ambrose of Milan</td><td>St Augustine of Canterbury</td><td>St Bede the Venerable (alt.)</td></tr>
+            <tr><td class="day-num">28</td><td>Assumption of the BVM</td><td>Immaculate Conception of the BVM</td><td>St Edward the Confessor</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="text-indent:0; text-align:center; font-size:0.88rem; margin-top:1rem; color:var(--ink-light);">
+        Full lectionary readings for each day (Morning Mass &amp; Evening Mass) are found in <em>The Insular Book</em>, available in the Scriptorium below.
+      </p>
+    </section>
+
+    <!-- ==================== LIBRARY ==================== -->
+    <section id="library" class="section celtic-border">
+      <h2>The Scriptorium</h2>
+      <div class="section-divider"></div>
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light); margin-bottom:1.5rem;">
+        The sacred library of the Insular Church. Click any manuscript to read it in full.
+      </p>
+
+      <div class="library-grid" id="libraryGrid"></div>
+
+      <p style="text-indent:0; text-align:center; font-size:0.85rem; color:var(--parchment-deep); margin-top:1.5rem;">
+        ✦ To add new documents, place PDF files in the <code style="font-size:0.82rem; background:rgba(42,26,10,0.07); padding:0.15em 0.4em;">docs/</code> folder and update the documents list in the page source. ✦
+      </p>
+    </section>
+
+    <!-- ==================== COMMUNITY ==================== -->
+    <section id="community" class="section celtic-border">
+      <h2>Community &amp; Contact</h2>
+      <div class="section-divider"></div>
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light);">
+        The doors of the Church are open to all who seek the ancient way.
+      </p>
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="c-icon">⚔️</div>
+          <h4>Mvindicraft Server</h4>
+          <p>Join the Mvindicraft community on Discord</p>
+          <p><a href="https://discord.gg/2M34xrJS" target="_blank" rel="noopener">discord.gg/2M34xrJS</a></p>
+        </div>
+        <div class="contact-card">
+          <div class="c-icon">🕯️</div>
+          <h4>The Insular Church</h4>
+          <p>Join the Church's own Discord server</p>
+          <p><a href="https://discord.gg/2S7Q6YhDXe" target="_blank" rel="noopener">discord.gg/2S7Q6YhDXe</a></p>
+        </div>
+        <div class="contact-card">
+          <div class="c-icon">📜</div>
+          <h4>Governance</h4>
+          <p>The Church is governed by the College of Five Primates, headed by the See of Armagh, Primate of Ireland, first among equals.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-cross">☩</div>
+    <p>The Insular Church of Mvindicraft</p>
+    <p>Pre-Tridentine Insular Rite · In Communion with Constantinople</p>
+    <p>Anno Dantavius LXXI · Sede Vacante</p>
+  </footer>
+
+  <!-- PDF VIEWER OVERLAY -->
+  <div class="pdf-overlay" id="pdfOverlay">
+    <div class="pdf-viewer-container">
+      <div class="pdf-viewer-header">
+        <h3 id="pdfTitle">Document</h3>
+        <button class="pdf-close-btn" onclick="closePdfViewer()">✕ Close</button>
+      </div>
+      <div class="pdf-viewer-body" id="pdfViewerBody"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    // =====================================================
+    //  DOCUMENT LIBRARY — EDIT THIS ARRAY TO ADD PDFs
+    // =====================================================
+    const documents = [
+      {
+        title: "The Insular Book — 28-Day Lectionary (2nd Ed.)",
+        description: "The complete liturgical calendar of Mvindicraft with biweekly lectionary in two daily sessions. Revised to MvnDate.py v0.2 season order.",
+        category: "Lectionary",
+        file: "docs/Insular_Book_Lectionary_2nd_Edition.pdf"
+      },
+      {
+        title: "Canons of the Synod of Armagh",
+        description: "The twelve canons promulgated by the First Insular Synod, establishing the governance, doctrine, and discipline of the Church.",
+        category: "Canon Law",
+        file: "docs/Canons_of_the_Synod_of_Armagh.pdf"
+      },
+      // ─── ADD MORE DOCUMENTS BELOW ───
+      // {
+      //   title: "The Bishops' Book",
+      //   description: "The Revised Confession of Faith as written by Corpo MacAirthir.",
+      //   category: "Doctrine",
+      //   file: "docs/bishops-book.pdf"
+      // },
+    ];
+
+    const categoryIcons = {
+      "Lectionary": "📖",
+      "Canon Law": "⚖️",
+      "Doctrine": "📕",
+      "Manuscripts": "📜",
+      "Liturgy": "🎵",
+      "Theology": "✝️",
+      "History": "🏛️",
+      "Catechism": "✍️",
+    };
+
+    function renderLibrary() {
+      const grid = document.getElementById('libraryGrid');
+      grid.innerHTML = '';
+      documents.forEach((doc) => {
+        const card = document.createElement('div');
+        card.className = 'library-card';
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', 'Open ' + doc.title);
+        card.innerHTML = `
+          <div class="card-icon">${categoryIcons[doc.category] || '📄'}</div>
+          <h4>${doc.title}</h4>
+          <p class="card-desc">${doc.description}</p>
+          <p class="card-meta">${doc.category}</p>
+        `;
+        card.addEventListener('click', () => openPdfViewer(doc));
+        card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openPdfViewer(doc); });
+        grid.appendChild(card);
+      });
+    }
+
+    function openPdfViewer(doc) {
+      const overlay = document.getElementById('pdfOverlay');
+      document.getElementById('pdfTitle').textContent = doc.title;
+      const body = document.getElementById('pdfViewerBody');
+      if (doc.file) {
+        body.innerHTML = `<iframe src="${doc.file}" title="${doc.title}"></iframe>`;
+      } else {
+        body.innerHTML = `
+          <div class="pdf-placeholder">
+            <div class="placeholder-icon">📜</div>
+            <p><strong>${doc.title}</strong></p>
+            <p>This manuscript has not yet been added to the Scriptorium. Place the PDF in <code>/docs/</code> and update the documents list.</p>
+          </div>`;
+      }
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePdfViewer() {
+      document.getElementById('pdfOverlay').classList.remove('active');
+      document.body.style.overflow = '';
+      document.getElementById('pdfViewerBody').innerHTML = '';
+    }
+
+    document.getElementById('pdfOverlay').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closePdfViewer();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePdfViewer(); });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+    renderLibrary();
+  </script>
+</body>
+</html>
