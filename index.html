@@ -289,6 +289,75 @@
       white-space: nowrap;
     }
 
+    /* ===== RITES ===== */
+    .rites-hero-img {
+      width: 100%;
+      max-width: 800px;
+      display: block;
+      margin: 1.5rem auto;
+      border: 3px solid var(--gold-dark);
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      box-shadow: 0 6px 30px rgba(42,26,10,0.35);
+    }
+    .rite-card {
+      margin: 1.5rem 0;
+      padding: 1.2rem 1.5rem;
+      border-left: 4px solid var(--gold-dark);
+      background: rgba(201,168,76,0.04);
+    }
+    .rite-card h4 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.05rem;
+      color: var(--crimson);
+      margin-bottom: 0.3rem;
+    }
+    .rite-card .rite-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      color: var(--gold-dark);
+      font-style: italic;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .rite-card p { text-indent: 0; font-size: 0.92rem; }
+    .letter-block {
+      margin: 2rem 0 1rem;
+      padding: 1.8rem 2rem;
+      border: 2px solid var(--gold-dark);
+      background: linear-gradient(160deg, rgba(250,243,224,0.6) 0%, rgba(240,228,200,0.3) 100%);
+      position: relative;
+    }
+    .letter-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--crimson), var(--gold), var(--crimson));
+    }
+    .letter-block .letter-heading {
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      color: var(--crimson);
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+    .letter-block p {
+      text-indent: 0;
+      font-size: 0.92rem;
+      margin-bottom: 0.8rem;
+      text-align: justify;
+    }
+    .letter-block p:last-child { margin-bottom: 0; }
+    .letter-signoff {
+      text-align: right;
+      font-style: italic;
+      color: var(--ink-light);
+      margin-top: 1rem;
+    }
+
     /* ===== CANONS ===== */
     .canon-block {
       margin: 1.5rem 0;
@@ -627,6 +696,219 @@
       text-indent: 0 !important;
     }
 
+    /* ===== PROVINCES & HIERARCHY ===== */
+    .province-card {
+      margin: 1.5rem 0;
+      padding: 1.3rem 1.5rem;
+      border: 2px solid var(--gold-dark);
+      background: linear-gradient(160deg, rgba(250,243,224,0.5) 0%, rgba(240,228,200,0.3) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .province-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--crimson), var(--gold), var(--crimson));
+    }
+    .province-card h4 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.1rem;
+      color: var(--crimson);
+      margin-bottom: 0.15rem;
+      font-weight: 700;
+    }
+    .province-card .province-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      color: var(--gold-dark);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .province-card p {
+      text-indent: 0;
+      font-size: 0.92rem;
+      margin-bottom: 0.4rem;
+    }
+    .province-card p:last-child { margin-bottom: 0; }
+    .province-detail {
+      font-size: 0.85rem !important;
+      color: var(--ink-light);
+    }
+    .province-see {
+      display: inline-block;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      color: var(--parchment);
+      background: var(--crimson);
+      padding: 0.1em 0.6em;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    .province-see.archbishopric {
+      background: var(--tier-purple);
+    }
+    .province-see.forthcoming {
+      background: var(--ink-light);
+      opacity: 0.7;
+    }
+    .province-cities {
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      margin-top: 0.4rem;
+      letter-spacing: 0.03em;
+    }
+
+    /* ===== PAPAL SUCCESSION ===== */
+    .succession-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+    }
+    .succession-table thead { background: var(--ink); }
+    .succession-table th {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .succession-table td {
+      padding: 0.5rem 0.8rem;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      vertical-align: top;
+      line-height: 1.4;
+    }
+    .succession-table tbody tr:hover { background: rgba(201,168,76,0.06); }
+    .pope-name {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .pope-player {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      font-style: italic;
+    }
+    .pope-reign {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      color: var(--gold-dark);
+      white-space: nowrap;
+    }
+    .succession-vacant td {
+      background: rgba(139,26,26,0.06);
+      color: var(--crimson);
+      font-style: italic;
+    }
+    .succession-vacant .pope-name {
+      color: var(--crimson);
+      font-weight: 600;
+    }
+    .succession-invalid td {
+      background: rgba(80,20,20,0.08);
+      text-decoration: line-through;
+      text-decoration-color: rgba(139,26,26,0.3);
+    }
+    .succession-invalid .pope-name {
+      color: var(--ink-light);
+    }
+    .succession-note {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      font-style: italic;
+    }
+
+    /* Hierarchy tree */
+    .hierarchy-province {
+      margin: 1.8rem 0 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--gold-dark);
+    }
+    .hierarchy-province:first-of-type { margin-top: 0.5rem; }
+    .hierarchy-province h3 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.2rem;
+      color: var(--crimson);
+      margin: 0 0 0.1rem;
+    }
+    .hierarchy-province .h-primate {
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      color: var(--gold-dark);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.8rem;
+    }
+    .h-subprovince {
+      margin: 1rem 0 0.6rem;
+      padding-left: 0.8rem;
+      border-left: 2px solid rgba(201,168,76,0.3);
+    }
+    .h-subprovince h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--ink);
+      font-weight: 600;
+      font-style: italic;
+      margin-bottom: 0.1rem;
+    }
+    .h-office {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding: 0.25rem 0 0.25rem 1.2rem;
+      font-size: 0.9rem;
+      position: relative;
+    }
+    .h-office::before {
+      content: '✛';
+      position: absolute;
+      left: 0;
+      color: var(--gold-dark);
+      font-size: 0.75rem;
+      top: 0.35rem;
+    }
+    .h-office .h-title {
+      color: var(--ink);
+      font-weight: 500;
+      min-width: fit-content;
+    }
+    .h-office .h-holder {
+      color: var(--royal-blue);
+      font-weight: 500;
+    }
+    .h-office .h-vacant {
+      color: var(--crimson);
+      font-style: italic;
+      font-size: 0.85rem;
+    }
+    .h-office .h-abeyance {
+      color: var(--parchment-deep);
+      font-style: italic;
+      font-size: 0.85rem;
+    }
+    .h-office.h-indent {
+      padding-left: 2.4rem;
+    }
+    .h-office.h-indent::before {
+      left: 1.2rem;
+    }
+    .h-divider {
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+      margin: 1.5rem auto;
+    }
+
     /* ===== FOOTER ===== */
     footer {
       background: linear-gradient(180deg, #1a0e04, #0e0804);
@@ -666,10 +948,12 @@
     <div class="nav-inner">
       <a href="#history">History</a>
       <a href="#doctrine">Doctrine</a>
+      <a href="#rites">Rites</a>
       <a href="#canons">Canons</a>
       <a href="#calendar">Calendar</a>
       <a href="#library">Scriptorium</a>
       <a href="#agenda">Synod Agenda</a>
+      <a href="#provinces">Hierarchy</a>
       <a href="#community">Community</a>
     </div>
   </nav>
@@ -695,6 +979,70 @@
         <p>
           The Insular Church of Mvindicraft was born from a crisis of legitimacy. Across the first four versions of the Mvindicraft server, a valid line of Apostolic Succession was maintained from Pope Geerus IX through to Pope Anastasius III. The Petrine office was held by men who had been duly ordained, and the sacraments flowed through an unbroken chain of consecration stretching back to the founding of the server in the Year of Our Lord 2020.
         </p>
+      </div>
+
+      <h3>The Apostolic Succession of the Western Church</h3>
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light); margin-bottom:0.3rem;">
+        The legitimate line of Popes, from the founding of the Petrine See in Mvindicraft to its vacancy. All dates given in the Mvndi calendar (Anno Dantavius).
+      </p>
+      <table class="succession-table">
+        <thead>
+          <tr>
+            <th>Pontiff</th>
+            <th>Reign (A.D.)</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pope-name">Geerus IX</span><br><span class="pope-player">Queerkiller</span></td>
+            <td class="pope-reign">Winter 16 – Summer 18</td>
+            <td class="succession-note">First Pope of Mvindicraft. Established the Petrine See.</td>
+          </tr>
+          <tr>
+            <td><span class="pope-name">Dende I</span><br><span class="pope-player">Dende</span></td>
+            <td class="pope-reign">Summer 18 – s.a.</td>
+            <td class="succession-note">Continued the early succession.</td>
+          </tr>
+          <tr>
+            <td><span class="pope-name">Urban VIII</span><br><span class="pope-player">Valous</span></td>
+            <td class="pope-reign">s.a. – Autumn 27</td>
+            <td class="succession-note"></td>
+          </tr>
+          <tr>
+            <td><span class="pope-name">Honorius V</span><br><span class="pope-player">AndyDrewy</span></td>
+            <td class="pope-reign">Autumn 27 – Winter 36</td>
+            <td class="succession-note"></td>
+          </tr>
+          <tr>
+            <td><span class="pope-name">Innocent VIII</span><br><span class="pope-player">RatheDogmatic</span></td>
+            <td class="pope-reign">Winter 36 – Spring 44</td>
+            <td class="succession-note"></td>
+          </tr>
+          <tr class="succession-vacant">
+            <td><span class="pope-name">SEDE VACANTE</span></td>
+            <td class="pope-reign">Spring 44 – Spring 48</td>
+            <td class="succession-note">The Petrine See stood empty for four years.</td>
+          </tr>
+          <tr>
+            <td><span class="pope-name">Grugoannes I</span><br><span class="pope-player">Grugs22ndtimetrollinrollin</span></td>
+            <td class="pope-reign">Spring 48 – Summer 58</td>
+            <td class="succession-note"></td>
+          </tr>
+          <tr>
+            <td><span class="pope-name">Anastasius III</span><br><span class="pope-player">Itzu</span></td>
+            <td class="pope-reign">Autumn 58 – Winter 69</td>
+            <td class="succession-note">Last legitimate Pope. The line of valid Apostolic Succession ends here.</td>
+          </tr>
+          <tr class="succession-vacant">
+            <td><span class="pope-name">SEDE VACANTE</span></td>
+            <td class="pope-reign">Winter 69 – present</td>
+            <td class="succession-note">The Petrine See remains vacant to this day.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="dropcap">
         <p>
           When International Organisations were established in a later version of Mvindicraft, the political landscape shifted. The Lombard King of Italy — a temporal ruler whose kingdom is now defunct and powerless — took it upon himself to appoint a new pope: Pope John I. John I was neither an ordained bishop nor even a priest. His elevation was a purely political act, proclaimed by temporal authority rather than conferred through the sacrament of Holy Orders.
         </p>
@@ -745,6 +1093,46 @@
         <li><strong>Valid Ordination</strong> — For an ordination to be valid, it must have proper matter, proper formula, be performed by an ordained bishop of good standing, and carry proper intent of both parties (Canon XII).</li>
         <li><strong>The Mvndi-Seasons Calendar</strong> — The Church orders its liturgical year according to a 28-day calendar of four seasons of seven days each, developed by Robert MacInerney and adopted by synodal decree.</li>
       </ul>
+    </section>
+
+    <!-- ==================== THE THREE RITES ==================== -->
+    <section id="rites" class="section celtic-border">
+      <h2>The Three Liturgical Hearts</h2>
+      <div class="section-divider"></div>
+
+      <img src="img/three_rites.png" alt="The Three Liturgical Hearts of the Insular Church — The Sarum Rite, The Rite of Pope Saint Gregory I, and the Rite of Saint Ninnian the Presbyter, depicted in a Minecraft cathedral" class="rites-hero-img">
+
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light); margin-bottom:1.5rem;">
+        The Insular Church preserves three distinct liturgical traditions, each with its own character and pastoral purpose, all united under the Pre-Tridentine Insular Rite. These rites are contained within <em>The Book of Common Use</em>, available in the Scriptorium.
+      </p>
+
+      <div class="rite-card" style="border-left-color: #b8960f;">
+        <h4>The Sarum Rite</h4>
+        <div class="rite-subtitle">The Liturgy of Medieval English Christendom</div>
+        <p>A faithful reconstruction of the Use of Salisbury — the great liturgical tradition that governed English worship from the high Middle Ages until its suppression. Rich in ceremonial, replete with procession and chant, the Sarum Rite represents the fullness of the pre-Reformation English church at prayer. It is the principal rite of the Insular Church for solemn occasions.</p>
+      </div>
+
+      <div class="rite-card" style="border-left-color: #8b1a1a;">
+        <h4>The Rite of Pope Saint Gregory I</h4>
+        <div class="rite-subtitle">A Missionary Form for Southern Europe</div>
+        <p>Inspired by the ancient Gregorian tradition and oriented toward the peoples of Southern Europe, this rite follows the pattern established by Saint Gregory the Great — the pope who sent Augustine to Canterbury and who insisted that the Church should baptise local customs rather than destroy them. It is a missionary form, dignified yet accessible, suited to the restoration of the faith in lands long under invalid Roman jurisdiction.</p>
+      </div>
+
+      <div class="rite-card" style="border-left-color: #1e3a6e;">
+        <h4>The Rite of Saint Ninnian the Presbyter</h4>
+        <div class="rite-subtitle">A Northern Missionary Rite</div>
+        <p>An austere and elegant rite suited to the Germanic and Nordic peoples, reminiscent of the early English simplicity of the island hermitages. Named for Saint Ninian, who built Candida Casa — the first Christian mission in Scotland — this rite strips the liturgy to its essential bones: Scripture, prayer, and sacrament, without excess ornamentation. It is the form commended for the new missions in Scandinavia and the northern frontiers of the faith.</p>
+      </div>
+
+      <div class="letter-block">
+        <p class="letter-heading">✠ A Gift from the Archbishop of Armagh to All Western Christians ✠<br>the Forth of Spring in the Year 71 Anno Dantavius</p>
+        <p>Grace and peace be with you, beloved brethren. To all Christians of the West — whether under the See of Rome, the Patriarchate of Constantinople, or other jurisdictions — we offer a work prepared for the glory of God and the edification of His Church.</p>
+        <p>Enclosed within these documents is <strong>The Book of Common Use</strong>, a guide of sacred order for bishops, priests, and faithful alike, containing three distinct liturgies (each with its own character, illustrated herein), instructions for church building, a Confession of Faith, and a provisional outline of the Canons of the Synod of Armagh, soon to be rendered in fuller conciliar form.</p>
+        <p>Also included is a lectionary adapted to the Mvndi calendar (28-day system), suitable for liturgical use and capable of conversion into a runnable executable format.</p>
+        <p>All Western Christians may employ these materials for pious and lawful purposes, irrespective of our present canonical relation to their communion, provided the rites are celebrated faithfully and with due intention and with valid ordinations as to ensure the sacraments work.</p>
+        <p>Those desiring further fellowship and instruction are invited to join the Insular Church server. Preparations are underway for a solemn Mass to be celebrated at Armagh/Canterbury for the Crowning of the English King.</p>
+        <p class="letter-signoff">Stand fast in the Faith. Hail!</p>
+      </div>
     </section>
 
     <!-- ==================== CANONS ==================== -->
@@ -1023,6 +1411,224 @@
 
       <p class="agenda-note">
         ✦ This agenda is maintained by the Primates and may be updated as matters arise before the Synod. ✦
+      </p>
+    </section>
+
+    <!-- ==================== PROVINCES & HIERARCHY ==================== -->
+    <section id="provinces" class="section celtic-border">
+      <h2>Ecclesiastical Hierarchy</h2>
+      <div class="section-divider"></div>
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light); margin-bottom:0.5rem;">
+        The governance of the Insular Church, ordered by Primacy and Province.
+      </p>
+      <p style="text-indent:0; text-align:center; font-size:0.82rem; color:var(--parchment-deep); margin-bottom:1.5rem;">
+        Forthcoming order of precedence: Armagh · St Davids · Canterbury · York · Scandinavia
+      </p>
+
+      <!-- ===== PRIMACY OF IRELAND ===== -->
+      <div class="hierarchy-province">
+        <h3>☩ Primas of Ireland</h3>
+        <div class="h-primate">Archbishop Corpo of Armagh — First Among Equals</div>
+        <div class="h-office">
+          <span class="h-title">Comarba Pátraic —</span>
+          <span class="h-holder">Abbot Nildrif of Armagh</span>
+        </div>
+
+        <div class="h-subprovince">
+          <h4>Leath Cuinn</h4>
+          <div class="h-office">
+            <span class="h-title">Archbishop of Armagh —</span>
+            <span class="h-holder">Archbishop Corpo of Armagh</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Abbot of Armagh —</span>
+            <span class="h-holder">Abbot Nildrif of Armagh</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of Carrickfergus —</span>
+            <span class="h-vacant">Sede vacante</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of Dublin —</span>
+            <span class="h-holder">Bishop Brian of Dublin</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Abbot of Bangor —</span>
+            <span class="h-abeyance">Abeyance</span>
+          </div>
+        </div>
+
+        <div class="h-subprovince">
+          <h4>Leath Moga</h4>
+          <div class="h-office">
+            <span class="h-title">Archbishop of Cashel —</span>
+            <span class="h-vacant">Sede vacante</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of Cork —</span>
+            <span class="h-vacant">Sede vacante</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRIMACY OF WALES ===== -->
+      <div class="hierarchy-province">
+        <h3>☩ Primas of Wales</h3>
+        <div class="h-primate">Archbishop Claude of St. Davids</div>
+
+        <div class="h-subprovince">
+          <h4>Province of Wales</h4>
+          <div class="h-office">
+            <span class="h-title">Bishop of St. Davids —</span>
+            <span class="h-holder">Archbishop Claude of St. Davids</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of Caerdydd —</span>
+            <span class="h-holder">Bishop Daryl of Caerdydd</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of Caernarfon —</span>
+            <span class="h-holder">Bishop Tabar of Caernarfon</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of Chester —</span>
+            <span class="h-holder">Bishop Texas of Chester</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Abbot of St. Davids —</span>
+            <span class="h-holder">Archbishop Claude of St. Davids</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRIMACY OF THE ANGLO-SAXONS ===== -->
+      <div class="hierarchy-province">
+        <h3>☩ Primas of the Anglo-Saxons</h3>
+        <div class="h-primate">Archbishop Ellis of Canterbury</div>
+
+        <div class="h-subprovince">
+          <h4>Province of Canterbury</h4>
+          <div class="h-office">
+            <span class="h-title">Archbishop of Canterbury —</span>
+            <span class="h-holder">Archbishop Ellis of Canterbury</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of London —</span>
+            <span class="h-holder">Bishop Yoresh of Londres</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRIMACY OF YORK / NORTHERN BRITANIA ===== -->
+      <div class="hierarchy-province">
+        <h3>☩ Primas of the Danes</h3>
+        <div class="h-primate">Archbishop Acutis of York — Forthcoming: Primate of all Northern Britania (incl. Scotland)</div>
+
+        <div class="h-subprovince">
+          <h4>Province of York</h4>
+          <div class="h-office">
+            <span class="h-title">Archbishop of York —</span>
+            <span class="h-holder">Archbishop Acutis of York</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of Bamburgh —</span>
+            <span class="h-vacant">Sede vacante</span>
+          </div>
+        </div>
+
+        <div class="h-subprovince">
+          <h4>Province of St. Andrews — To be absorbed into York</h4>
+          <div class="h-office">
+            <span class="h-title">Archbishop of St. Andrews —</span>
+            <span class="h-holder">Bishop Nathan of St. Andrews</span>
+          </div>
+          <div class="h-office h-indent">
+            <span class="h-title">Bishop of Orkney —</span>
+            <span class="h-vacant">Sede vacante</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PRIMACY OF SCANDINAVIA (FORTHCOMING) ===== -->
+      <div class="hierarchy-province">
+        <h3>☩ Primas of Scandinavia</h3>
+        <div class="h-primate" style="color:var(--ink-light); font-style:italic;">Forthcoming — To be established at the Synod of York</div>
+
+        <div class="h-subprovince">
+          <h4>Archbishopric of Scandinavia (Oslo) — Forthcoming</h4>
+          <div class="h-office">
+            <span class="h-title">Archbishop of Oslo —</span>
+            <span class="h-vacant">To be appointed</span>
+          </div>
+        </div>
+
+        <div class="h-subprovince">
+          <h4>Archbishopric of Denmark</h4>
+          <div class="h-office">
+            <span class="h-title">Archbishop of Denmark —</span>
+            <span class="h-vacant">To be appointed</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-divider"></div>
+
+      <!-- ===== NATIONS ===== -->
+      <h2 style="margin-top:1rem;">Nations of the Faithful</h2>
+      <div class="section-divider"></div>
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light); margin-bottom:1.5rem;">
+        The temporal kingdoms and nations that profess the faith of the Insular Church.
+      </p>
+
+      <div class="province-card">
+        <h4>Ulaidh</h4>
+        <div class="province-subtitle">Kingdom of Ulster · Primacy of Ireland</div>
+        <p>The ancient Kingdom of Ulaidh, rooted in the heartland of Irish Christianity, under the spiritual governance of the Primatial See of Armagh.</p>
+      </div>
+
+      <div class="province-card">
+        <h4>Oriel</h4>
+        <div class="province-subtitle">Northern Ireland · Primacy of Armagh</div>
+        <p><span class="province-see">PRIMATIAL SEE</span> The Kingdom of Oriel is centred upon the City and Primacy of Armagh — the first among equals and seat of the Comharba Pátraic. Oriel also encompasses Mourne, both in Northern Ireland.</p>
+      </div>
+
+      <div class="province-card">
+        <h4>Northern Britania</h4>
+        <div class="province-subtitle">Union of Northumbria &amp; Scotland · Primacy of York</div>
+        <p><span class="province-see">PRIMATIAL SEE</span> A union of the Kingdoms of Northumbria and Scotland, together with the vassal Kingdom of Cumbria. The Primatial See of York will govern the whole of Northern Britania once the absorption of the Province of St. Andrews is formalised.</p>
+        <p class="province-cities">9 cities including Edinburgh &amp; York</p>
+      </div>
+
+      <div class="province-card">
+        <h4>England</h4>
+        <div class="province-subtitle">Kingdom of England · Primacy of Canterbury</div>
+        <p><span class="province-see">PRIMATIAL SEE</span> The Kingdom of England, containing six cities including London and Canterbury. The latter hosts the Primatial See of the Anglo-Saxons.</p>
+        <p class="province-cities">6 cities including London &amp; Canterbury</p>
+      </div>
+
+      <div class="province-card">
+        <h4>The Welsh Marches</h4>
+        <div class="province-subtitle">Principality of Wales · Primacy of St Davids</div>
+        <p><span class="province-see">PRIMATIAL SEE</span> Nine cities including the historic Primatial See of St Davids, the capital Caernarfon, and overseas possessions including Calais.</p>
+        <p class="province-cities">9 cities including St Davids &amp; Caernarfon · Overseas: Calais</p>
+      </div>
+
+      <div class="province-card">
+        <h4>Norway</h4>
+        <div class="province-subtitle">Kingdom of Norway · Archbishopric &amp; Primacy of Scandinavia (Forthcoming)</div>
+        <p><span class="province-see forthcoming">FORTHCOMING PRIMACY</span> Four cities, including Oslo — the future seat of the Archbishopric and Primacy of Scandinavia.</p>
+        <p class="province-cities">4 cities including Oslo</p>
+      </div>
+
+      <div class="province-card">
+        <h4>Denmark</h4>
+        <div class="province-subtitle">Kingdom of Denmark · Archbishopric of Denmark</div>
+        <p><span class="province-see archbishopric">ARCHBISHOPRIC</span> The largest nation by number of cities to profess the Insular faith, containing eleven cities including the capital Copenhagen.</p>
+        <p class="province-cities">11 cities including Copenhagen</p>
+      </div>
+
+      <p style="text-indent:0; text-align:center; font-size:0.85rem; color:var(--parchment-deep); margin-top:1.5rem;">
+        ✦ The formal mapping of diocesan boundaries, the reorganisation of Primacies, and the establishment of the Scandinavian Primacy are on the agenda of the Synod of York. ✦
       </p>
     </section>
 
