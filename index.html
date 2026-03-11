@@ -563,6 +563,70 @@
     .note-box p { text-indent: 0; margin-bottom: 0.5rem; }
     .note-box p:last-child { margin-bottom: 0; }
 
+    /* ===== AGENDA ===== */
+    .agenda-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.3rem;
+    }
+    .agenda-header h2 { margin-bottom: 0; }
+    .agenda-date-badge {
+      display: inline-block;
+      background: var(--crimson);
+      color: var(--parchment);
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 0.25em 0.8em;
+      border-radius: 2px;
+    }
+    .agenda-item {
+      margin: 1rem 0;
+      padding: 1rem 1.3rem;
+      border-left: 3px solid var(--gold-dark);
+      background: rgba(201,168,76,0.04);
+      position: relative;
+      counter-increment: agenda-counter;
+    }
+    .agenda-item::before {
+      content: counter(agenda-counter, upper-roman) ".";
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: var(--crimson);
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .agenda-list {
+      counter-reset: agenda-counter;
+    }
+    .agenda-item h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+    .agenda-item p {
+      text-indent: 0;
+      font-size: 0.92rem;
+      color: var(--ink-light);
+      margin-bottom: 0;
+      line-height: 1.6;
+    }
+    .agenda-note {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--parchment-deep);
+      text-indent: 0 !important;
+    }
+
     /* ===== FOOTER ===== */
     footer {
       background: linear-gradient(180deg, #1a0e04, #0e0804);
@@ -605,6 +669,7 @@
       <a href="#canons">Canons</a>
       <a href="#calendar">Calendar</a>
       <a href="#library">Scriptorium</a>
+      <a href="#agenda">Synod Agenda</a>
       <a href="#community">Community</a>
     </div>
   </nav>
@@ -649,6 +714,14 @@
       </p>
       <p>
         The Insular Church holds to the doctrine of Apostolic Succession and recognises the authority of Peter as given in Matthew 16:18–19. It is precisely because of this fidelity that it cannot accept a pope who was never ordained. The Petrine See is long since vacant — and until a validly consecrated Bishop of Rome can be recognised, the Church governs itself through synodal authority, in communion with the Patriarchate of Constantinople.
+      </p>
+
+      <h3>The Restoration of the Western Church</h3>
+      <p>
+        Because the Insular Church is now the sole Western body maintaining an unbroken line of Apostolic Succession, it bears a unique responsibility. The Ordinal — set forth by authority of the Five Primates — provides not only for the ordering of Priests, the consecration of Bishops, the installation of Archbishops, and the enthronement of Primates, but also a hypothetical Form for the Enthronement of a Bishop of Rome upon the eventual reunion of the whole Church. In that Form, the Bishop of Rome is understood as Patriarch of the West and Servant of the Servants of God, holding a primacy of honour rather than of universal jurisdiction — as Saint Gregory the Great himself refused the title "Universal Bishop" as contrary to the Gospel.
+      </p>
+      <p>
+        The question of whether and how to pursue the restoration and reformation of the wider Western Church is among the most consequential matters facing the Insular Church today. The forthcoming Synod of York (13 March 2026) will take up this question directly: whether to issue a public declaration affirming the Insular Church as the only legitimate Western church, whether to engage diplomatically with the rival claimants, or whether to hold silence and let the truth of Apostolic Succession speak for itself.
       </p>
     </section>
 
@@ -903,6 +976,56 @@
       </p>
     </section>
 
+    <!-- ==================== AGENDA ==================== -->
+    <section id="agenda" class="section celtic-border">
+      <div class="agenda-header">
+        <h2>Synod of York</h2>
+        <span class="agenda-date-badge">13 March 2026 A.D.</span>
+      </div>
+      <div class="section-divider"></div>
+      <p style="text-indent:0; text-align:center; font-style:italic; color:var(--ink-light); margin-bottom:0.5rem;">
+        Convened under the authority of the Five Primates, at the Primatial See of York
+      </p>
+      <p style="text-indent:0; text-align:center; font-size:0.85rem; color:var(--ink-light); margin-bottom:1.5rem;">
+        Among the weightiest matters to be addressed is the hypothetical possibility of restoring and reforming the Western Church. Since the Petrine See remains vacant and no validly ordained claimant has emerged, the Insular Church — as the sole Western body maintaining unbroken Apostolic Succession — must consider what role, if any, it ought to play in the eventual reunion and reform of Western Christendom. The Ordinal already provides a Form for the Enthronement of a Bishop of Rome upon the reunion of the whole Church; the Synod must now deliberate on the practical and diplomatic dimensions of that vision.
+      </p>
+
+      <div class="agenda-list">
+        <div class="agenda-item">
+          <h4>Of Bishop Demotions, Promotions, Consecrations &amp; Priestly Discipline</h4>
+          <p>Establishing formal processes for the demotion and promotion of Bishops, the consecration of new Bishops, and the discipline of Priests within the Church's jurisdiction.</p>
+        </div>
+        <div class="agenda-item">
+          <h4>Of the Hypothetical Reformation &amp; Restoration of the Roman Catholic Church</h4>
+          <p>Whether the restoration of the Roman Catholic Church should be actively pursued, and to what extent the Insular Church should involve itself. Whether to issue a public declaration affirming the Insular Church as the sole legitimate Western church with valid Holy Orders; whether to engage diplomatically with rival claimants; or whether to refrain from engagement entirely.</p>
+        </div>
+        <div class="agenda-item">
+          <h4>Of Crypto-Paganism &amp; Ancestral Culture</h4>
+          <p>Determining which aspects of ancestral and pre-Christian culture may be tolerated, which may be enculturated into a Christian context (as St Gregory the Great instructed St Augustine of Canterbury), and which must be suppressed as incompatible with the Faith.</p>
+        </div>
+        <div class="agenda-item">
+          <h4>Of the Expansion into the Nordic Countries</h4>
+          <p>Addressing the recent expansion of the Church into Scandinavian lands; the public profession of faith by heads of state on the Mvindi Main Server; and whether to expand further — and if so, to where missionary orders should be dispatched.</p>
+        </div>
+        <div class="agenda-item">
+          <h4>Of Local Primatial Synods</h4>
+          <p>Whether the Primacies ought to convene their own local synods for matters of purely provincial scope, to be formally documented, recorded, and maintained in their own channels — in accordance with Canon II of the Synod of Armagh.</p>
+        </div>
+        <div class="agenda-item">
+          <h4>Of Reforming &amp; Expanding the Primacies</h4>
+          <p>The possible expansion and reorganisation of the Primatial structure, particularly the See of York (Primate of the Danes), St Andrews (following the merger of Northumbria and Scotland), and the question of a Scandinavian Primacy. Additionally: the formal mapping of the ecclesiastical geography of the Church — dioceses, primacies, and overall boundaries.</p>
+        </div>
+        <div class="agenda-item">
+          <h4>Of the Defence of the Isles &amp; Interstate Conflicts</h4>
+          <p>The Church's role in defending the British Isles from foreign invasion, and to what extent the clergy and faithful should involve themselves in interstate conflicts and temporal warfare.</p>
+        </div>
+      </div>
+
+      <p class="agenda-note">
+        ✦ This agenda is maintained by the Primates and may be updated as matters arise before the Synod. ✦
+      </p>
+    </section>
+
     <!-- ==================== COMMUNITY ==================== -->
     <section id="community" class="section celtic-border">
       <h2>Community &amp; Contact</h2>
@@ -970,19 +1093,26 @@
         category: "Canon Law",
         file: "docs/Canons_of_the_Synod_of_Armagh.pdf"
       },
+      {
+        title: "The Book of Common Use — 70 A.D. Prototypical Edition",
+        description: "The Bishops' Book containing the Revised Confession of Faith, the foundational teaching of the Church on all matters of doctrine and dogma, as written by Corpo MacAirthir.",
+        category: "Doctrine",
+        file: "docs/THE_BOOK_OF_COMMON_USE_-_70_AD_PROTOTYPICAL_EDITION.pdf"
+      },
+      {
+        title: "The Insular Church Ordinal",
+        description: "A guide for the whole of the Western Church: the Forme and Manner of ordering Priests, consecrating Bishops, installing Archbishops, enthroning Primates, and the hypothetical enthronement of the Bishop of Rome upon the reunion of Christendom.",
+        category: "Ordinal",
+        file: "docs/THE_INSULAR_CHURCH_ORDINAL_-_A_GUIDE_FOR_THE_WHOLE_OF_THE_WESTERN_CHURCH.pdf"
+      },
       // ─── ADD MORE DOCUMENTS BELOW ───
-      // {
-      //   title: "The Bishops' Book",
-      //   description: "The Revised Confession of Faith as written by Corpo MacAirthir.",
-      //   category: "Doctrine",
-      //   file: "docs/bishops-book.pdf"
-      // },
     ];
 
     const categoryIcons = {
       "Lectionary": "📖",
       "Canon Law": "⚖️",
       "Doctrine": "📕",
+      "Ordinal": "🔔",
       "Manuscripts": "📜",
       "Liturgy": "🎵",
       "Theology": "✝️",
