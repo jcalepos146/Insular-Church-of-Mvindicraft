@@ -914,7 +914,7 @@
     #ecclesmap-container {
       position: relative;
       width: 100%;
-      height: 600px;
+      height: 650px;
       border: 4px solid var(--gold-dark);
       outline: 2px solid var(--gold);
       outline-offset: 4px;
@@ -1860,9 +1860,6 @@
       <p style="text-indent:0; text-align:center; font-size:0.82rem; color:var(--parchment-deep); margin-top:0.8rem;">
         ✦ Click any marker to view the see's title, holder, and province. Use the province buttons to fly to a region. ✦
       </p>
-      <p style="text-indent:0; text-align:center; font-size:0.76rem; color:var(--parchment-deep); margin-top:0.2rem;">
-        Map image: <code style="font-size:0.74rem;">img/mvindicraft_world.png</code> — place the world map image in that path relative to this file.
-      </p>
     </section>
 
     <!-- ==================== COMMUNITY ==================== -->
@@ -2023,20 +2020,20 @@
   <script>
     // =====================================================
     //  ECCLESIAL MAP — Mvindicraft World (CRS.Simple)
-    //  Image: 789 x 680 px
+    //  Image: 2000 x 1723 px (upscaled from 789x680)
     //  Coordinate mapping from real-world lat/lng:
-    //    pixel_x = 5.683 * lng + 205.57
-    //    pixel_y = -18.225 * lat + 1196.6
+    //    pixel_x = 14.40 * lng + 521.0
+    //    pixel_y = -46.16 * lat + 3030.5
     //    leaflet  = [IMG_H - pixel_y,  pixel_x]
     //  To add a city: push to the `sees` array below.
     // =====================================================
     (function() {
-      const IMG_W = 789, IMG_H = 680;
-      const MAP_IMG = 'img/mvindicraft_world.png'; // ← put the world map image here
+      const IMG_W = 2000, IMG_H = 1723;
+      const MAP_IMG = 'img/mvindicraft_world.png';
 
       // --- Coordinate helpers ---
       function geo2px(lat, lng) {
-        return { x: 5.683 * lng + 205.57, y: -18.225 * lat + 1196.6 };
+        return { x: 14.40 * lng + 521.0, y: -46.16 * lat + 3030.5 };
       }
       function geo2leaf(lat, lng) {
         const px = geo2px(lat, lng);
@@ -2156,10 +2153,10 @@
       const map = L.map('ecclesmap-container', {
         crs: L.CRS.Simple,
         center: [IMG_H * 0.62, IMG_W * 0.26],  // roughly British Isles
-        zoom: 1,
-        minZoom: -1,
+        zoom: 0,
+        minZoom: -2,
         maxZoom: 4,
-        maxBounds: [[-100, -100], [IMG_H + 100, IMG_W + 100]],
+        maxBounds: [[-200, -200], [IMG_H + 200, IMG_W + 200]],
         maxBoundsViscosity: 0.9,
         zoomSnap: 0.25,
         zoomDelta: 0.5,
@@ -2185,12 +2182,12 @@
       const labelLayer = L.layerGroup().addTo(map);
       sees.filter(s => s.rank === 'primacy').forEach(s => {
         const lf = geo2leaf(s.lat, s.lng);
-        const label = L.marker([lf[0] - 8, lf[1]], {
+        const label = L.marker([lf[0] - 20, lf[1]], {
           icon: L.divIcon({
             className: '',
-            iconSize: [120, 20],
-            iconAnchor: [60, 0],
-            html: '<div style="text-align:center;font-family:Cinzel,serif;font-size:10px;color:#c9a84c;text-shadow:0 0 4px #000,0 0 8px #000,1px 1px 2px #000;letter-spacing:0.08em;white-space:nowrap;pointer-events:none;">'+s.name+'</div>'
+            iconSize: [160, 24],
+            iconAnchor: [80, 0],
+            html: '<div style="text-align:center;font-family:Cinzel,serif;font-size:11px;color:#c9a84c;text-shadow:0 0 4px #000,0 0 8px #000,1px 1px 3px #000;letter-spacing:0.1em;white-space:nowrap;pointer-events:none;">'+s.name+'</div>'
           }),
           interactive: false
         });
@@ -2229,8 +2226,8 @@
         } else {
           const b = PROV_BOUNDS[prov];
           if (b) {
-            const pad = 40;
-            map.flyToBounds([[b.minY - pad, b.minX - pad], [b.maxY + pad, b.maxX + pad]], { duration: 0.8, maxZoom: 3 });
+            const pad = 100;
+            map.flyToBounds([[b.minY - pad, b.minX - pad], [b.maxY + pad, b.maxX + pad]], { duration: 0.8, maxZoom: 2.5 });
           }
         }
       });
