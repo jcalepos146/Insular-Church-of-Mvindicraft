@@ -2038,17 +2038,20 @@
     // ==========================================================================
     //  ECCLESIAL MAP — Mvindicraft World (CRS.Simple)
     //  Image: 2000 x 1723 px
-    //  Calibration (3-point: Gibraltar, Jutland, Peloponnese):
-    //    pixel_x = 13.62 * lng + 522.9
-    //    pixel_y = -21.70 * lat + 1711.2
-    //    leaflet = [IMG_H - pixel_y,  pixel_x]
+    //  Mercator calibration (8-point least-squares fit on Minecraft terrain):
+    //    pixel_x = 13.657 * lng + 485.264
+    //    pixel_y = -887.232 * merc(lat) + 1512.646
+    //    where merc(lat) = ln(tan(π/4 + lat_rad/2))
+    //    leaflet = [IMG_H - pixel_y, pixel_x]
     // ==========================================================================
     (function() {
       const IMG_W = 2000, IMG_H = 1723;
       const MAP_IMG = 'img/mvindicraft_world.png';
 
       function geo2leaf(lat, lng) {
-        const px = { x: 13.62 * lng + 522.9, y: -21.70 * lat + 1711.2 };
+        var latRad = lat * Math.PI / 180;
+        var mercY = Math.log(Math.tan(Math.PI/4 + latRad/2));
+        var px = { x: 13.657 * lng + 485.264, y: -887.232 * mercY + 1512.646 };
         return [IMG_H - px.y, px.x];
       }
       function geoPath(arr) { return arr.map(function(c){ return geo2leaf(c[0],c[1]); }); }
@@ -2223,7 +2226,7 @@
         { name:'Constantinople', lat:41.01, lng:28.98,  rank:'Ecumenical Patriarchate', holder:'Patriarch of Constantinople', province:'In Communion with the Insular Church', nation:'', status:'filled', type:'patriarch', faction:'orthodox', note:'First Among Equals of the Orthodox Churches', group:'orthodox' },
         { name:'Jerusalem',      lat:31.77, lng:35.23,  rank:'Patriarchate of Jerusalem', holder:'Patriarch of Jerusalem', province:'In Communion with the Insular Church', nation:'', status:'filled', type:'patriarch', faction:'orthodox', note:'Guardian of the Holy Places', group:'orthodox' },
         { name:'Antioch',        lat:36.20, lng:36.16,  rank:'Patriarchate of Antioch', holder:'Patriarch of Antioch', province:'In Communion with the Insular Church', nation:'', status:'filled', type:'patriarch', faction:'orthodox', note:'Ancient See of St. Peter', group:'orthodox' },
-        { name:'Alexandria',     lat:31.20, lng:29.92,  rank:'Coptic Patriarchate', holder:'Coptic Patriarch of Alexandria', province:'In Communion with the Insular Church', nation:'', status:'filled', type:'patriarch', faction:'coptic', note:'The Coptic See of Alexandria', group:'orthodox' },
+        { name:'Alexandria',     lat:31.20, lng:29.92,  rank:'Coptic Patriarchate', holder:'Coptic Patriarch of Alexandria', province:'Miaphysite · Not in Communion', nation:'', status:'filled', type:'patriarch', faction:'coptic', note:'The Coptic See of Alexandria — Apostolic succession recognised, but Miaphysite; not in communion with the Insular Church', group:'orthodox' },
       ];
 
       // ======== PROVINCE BOUNDS (for fly-to) ========
@@ -2297,8 +2300,25 @@
 
       // --- ORTHODOX PATRIARCHATE TERRITORIES ---
       var ORTHODOX_TERRITORIES = [
-        { label: 'Patriarchate of Constantinople', color: C.orthodox,
-          coords: [[42.0,26.0],[42.5,28.0],[41.5,30.0],[40.0,30.5],[38.5,27.0],[37.5,27.5],[37.0,29.0],[36.5,30.0],[36.5,36.0],[39.5,36.5],[41.0,33.0],[42.0,30.0],[42.0,26.0]] },
+        { label: 'Patriarchate of Constantinople — Byzantine Empire c. 1170', color: C.orthodox,
+          coords: [
+            // Adriatic coast up through Balkans
+            [39.5,20.0],[40.5,19.5],[42.0,19.0],[42.5,18.5],
+            // Danube frontier
+            [43.5,20.0],[44.0,22.0],[44.5,24.0],[44.0,26.0],[43.5,28.0],
+            // Black Sea coast
+            [43.0,28.5],[42.5,29.0],[41.5,29.5],[41.0,30.0],
+            // Northern Anatolia coast
+            [42.0,33.0],[41.5,36.0],[40.5,38.0],[39.5,40.0],
+            // Eastern Anatolia frontier
+            [38.5,41.0],[37.5,40.5],[37.0,39.0],
+            // Southern Anatolia coast
+            [36.5,36.5],[36.0,34.0],[36.5,32.0],[37.0,29.0],[37.5,27.5],
+            // Aegean / Crete
+            [36.5,26.0],[35.0,25.5],[35.0,24.0],[36.0,22.5],
+            // Peloponnese / Western Greece
+            [36.5,22.0],[37.5,21.5],[38.0,21.0],[39.0,20.5],[39.5,20.0]
+          ] },
         { label: 'Patriarchate of Jerusalem', color: C.orthodox,
           coords: [[33.5,34.5],[33.5,36.0],[31.0,35.5],[29.5,34.5],[30.5,34.0],[33.5,34.5]] },
         { label: 'Patriarchate of Antioch', color: C.orthodox,
@@ -2351,10 +2371,11 @@
       // Orthodox territories (green outline)
       var orthodoxLayer = L.layerGroup();
       ORTHODOX_TERRITORIES.forEach(function(t) {
+        var communionText = t.color===C.coptic ? '<em>Apostolic succession recognised · Miaphysite · Not in communion</em>' : '<strong>In Communion with the Insular Church</strong>';
         L.polygon(geoPath(t.coords), {
           color: t.color||C.orthodox, weight: 2, dashArray: '10,6',
           fillColor: t.color||C.orthodox, fillOpacity: 0.08, interactive: true
-        }).bindPopup('<div class="popup-rank" style="background:'+(t.color||C.orthodox)+';">PATRIARCHATE</div><div class="popup-title">'+t.label+'</div><div class="popup-holder" style="color:'+(t.color||C.orthodox)+';"><strong>In Communion with the Insular Church</strong></div>').addTo(orthodoxLayer);
+        }).bindPopup('<div class="popup-rank" style="background:'+(t.color||C.orthodox)+';">PATRIARCHATE</div><div class="popup-title">'+t.label+'</div><div class="popup-holder" style="color:'+(t.color||C.orthodox)+';">'+communionText+'</div>').addTo(orthodoxLayer);
       });
       orthodoxLayer.addTo(map);
 
