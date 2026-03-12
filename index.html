@@ -931,9 +931,11 @@
       box-shadow: inset 0 0 60px rgba(42,26,10,0.5), inset 0 0 120px rgba(42,26,10,0.25);
     }
     #ecclesmap-container .leaflet-container {
-      background: #1a1208;
+      background: #1a2840;
       font-family: 'Cormorant Garamond', serif;
     }
+    .land-polygon { stroke-linejoin: round; }
+    .leaflet-tile-pane { display: none; }
     .map-title-cartouche {
       text-align: center;
       margin: 0.5rem 0 0.8rem;
@@ -1845,6 +1847,8 @@
         <button class="map-prov-btn" data-prov="wales">Wales</button>
         <button class="map-prov-btn" data-prov="england">England</button>
         <button class="map-prov-btn" data-prov="france">France</button>
+        <button class="map-prov-btn" data-prov="denmark">Denmark</button>
+        <button class="map-prov-btn" data-prov="norway">Norway</button>
         <button class="map-prov-btn" data-prov="rival">Rival Papacies</button>
         <button class="map-prov-btn" data-prov="orthodox">Orthodox Sees</button>
       </div>
@@ -1853,6 +1857,7 @@
         <label style="cursor:pointer;display:flex;align-items:center;gap:0.3rem;"><input type="checkbox" data-layer="boundaries" checked style="accent-color:var(--gold-dark);"> Borders</label>
         <label style="cursor:pointer;display:flex;align-items:center;gap:0.3rem;"><input type="checkbox" data-layer="clementine" checked style="accent-color:#cc3333;"> Clementine Papacy</label>
         <label style="cursor:pointer;display:flex;align-items:center;gap:0.3rem;"><input type="checkbox" data-layer="jp1" checked style="accent-color:#7744bb;"> JP1 Papacy</label>
+        <label style="cursor:pointer;display:flex;align-items:center;gap:0.3rem;"><input type="checkbox" data-layer="contested" checked style="accent-color:#ff8800;"> Contested</label>
         <label style="cursor:pointer;display:flex;align-items:center;gap:0.3rem;"><input type="checkbox" data-layer="orthodox" checked style="accent-color:#2e7d32;"> Orthodox Sees</label>
       </div>
 
@@ -1870,6 +1875,7 @@
         <div class="map-legend-item"><div class="map-legend-dot" style="background:#555;"></div> Non-Insular</div>
         <div class="map-legend-item"><div class="map-legend-dot" style="background:#cc3333;"></div> Clementine Papacy</div>
         <div class="map-legend-item"><div class="map-legend-dot" style="background:#7744bb;"></div> JP1 Papacy</div>
+        <div class="map-legend-item"><div class="map-legend-dot" style="background:#ff8800;"></div> Contested (Both Popes)</div>
         <div class="map-legend-item"><div class="map-legend-dot" style="background:#2e7d32;"></div> Orthodox (Communion)</div>
         <div class="map-legend-item"><div class="map-legend-dot" style="background:#8d6e63;"></div> Coptic See</div>
       </div>
@@ -2036,449 +2042,510 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script>
     // ==========================================================================
-    //  ECCLESIAL MAP — Mvindicraft World (CRS.Simple)
-    //  Image: 2000 x 1723 px
-    //  Mercator calibration (8-point least-squares fit on Minecraft terrain):
-    //    pixel_x = 13.657 * lng + 485.264
-    //    pixel_y = -887.232 * merc(lat) + 1512.646
-    //    where merc(lat) = ln(tan(π/4 + lat_rad/2))
-    //    leaflet = [IMG_H - pixel_y, pixel_x]
+    //  ECCLESIAL MAP — Custom vector map, no external tiles or images
+    //  All geography drawn as Leaflet polygons/polylines in real lat/lng
+    //  Settlements are the primary layer; geography is decorative
     // ==========================================================================
     (function() {
-      const IMG_W = 2000, IMG_H = 1723;
-      const MAP_IMG = 'img/mvindicraft_world.png';
 
-      function geo2leaf(lat, lng) {
-        var latRad = lat * Math.PI / 180;
-        var mercY = Math.log(Math.tan(Math.PI/4 + latRad/2));
-        var px = { x: 13.657 * lng + 485.264, y: -887.232 * mercY + 1512.646 };
-        return [IMG_H - px.y, px.x];
-      }
-      function geoPath(arr) { return arr.map(function(c){ return geo2leaf(c[0],c[1]); }); }
+      // === AUTO-GENERATED COASTLINE DATA ===
+      var LAND = {
+        ireland: [[55.38,-7.4],[55.3,-6.1],[55.0,-5.9],[54.65,-5.5],[54.4,-5.5],[54.1,-5.55],[53.85,-5.85],[53.55,-6.0],[53.35,-6.1],[53.2,-6.0],[53.0,-6.2],[52.8,-6.2],[52.5,-6.4],[52.3,-6.55],[52.2,-6.9],[52.0,-7.05],[51.85,-7.5],[51.65,-8.3],[51.45,-9.5],[51.5,-10.0],[51.8,-10.3],[52.1,-10.0],[52.3,-9.8],[52.5,-9.9],[52.7,-10.0],[52.9,-9.6],[53.0,-9.9],[53.2,-9.95],[53.35,-10.0],[53.55,-9.9],[53.7,-9.7],[53.9,-9.8],[54.1,-10.0],[54.3,-9.8],[54.5,-8.5],[54.8,-8.2],[55.1,-7.7],[55.2,-7.5],[55.38,-7.4]],
+        britain: [[58.6,-3.1],[58.6,-5.0],[58.2,-5.0],[57.8,-5.4],[57.6,-5.5],[57.3,-5.7],[57.0,-5.9],[56.8,-5.6],[56.6,-5.5],[56.5,-5.8],[56.3,-5.7],[56.1,-5.3],[55.9,-5.5],[55.7,-5.4],[55.5,-5.0],[55.3,-4.7],[55.0,-4.9],[54.8,-5.1],[54.6,-4.8],[54.3,-4.5],[54.0,-4.8],[53.9,-4.6],[53.3,-4.4],[53.2,-4.7],[52.9,-4.7],[52.6,-5.0],[52.3,-5.2],[51.9,-5.3],[51.7,-5.3],[51.6,-5.1],[51.5,-5.0],[51.4,-4.5],[51.35,-4.0],[51.6,-3.6],[51.4,-3.1],[51.4,-2.9],[51.6,-2.7],[51.55,-2.4],[51.0,-2.3],[50.7,-2.7],[50.7,-3.4],[50.5,-3.5],[50.3,-4.0],[50.1,-5.1],[50.0,-5.6],[50.1,-5.7],[50.3,-5.0],[50.5,-4.8],[50.5,-3.5],[50.6,-3.1],[50.6,-2.4],[50.65,-1.9],[50.75,-1.3],[50.7,-0.8],[50.8,-0.3],[50.8,0.3],[50.9,0.7],[51.1,1.2],[51.4,1.4],[51.5,1.0],[51.8,1.0],[52.0,1.6],[52.5,1.7],[52.8,1.4],[53.0,0.3],[53.3,0.0],[53.5,-0.1],[53.7,0.0],[53.9,-0.2],[54.1,-0.3],[54.5,-0.8],[54.7,-1.2],[55.0,-1.4],[55.3,-1.5],[55.6,-1.8],[55.8,-1.9],[55.9,-2.1],[55.7,-2.6],[55.3,-2.8],[55.0,-2.9],[55.0,-3.3],[55.3,-3.4],[55.6,-3.1],[55.9,-3.2],[56.1,-2.5],[56.3,-2.8],[56.5,-3.0],[56.7,-2.5],[56.8,-2.1],[57.1,-2.1],[57.3,-2.0],[57.5,-1.8],[57.7,-2.0],[57.8,-3.0],[58.0,-3.0],[58.2,-3.2],[58.4,-3.0],[58.6,-3.1]],
+        orkney: [[59.0,-3.3],[59.0,-2.7],[58.8,-2.7],[58.8,-3.3],[59.0,-3.3]],
+        shetland: [[60.5,-1.3],[60.5,-0.8],[60.1,-0.8],[60.1,-1.3],[60.5,-1.3]],
+        isle_of_man: [[54.4,-4.3],[54.4,-4.7],[54.1,-4.7],[54.1,-4.3],[54.4,-4.3]],
+        iceland: [[66.5,-23.0],[66.4,-18.0],[65.5,-14.0],[64.0,-14.0],[63.5,-18.0],[63.8,-21.0],[64.5,-24.0],[65.5,-24.5],[66.5,-23.0]],
+        scandinavia: [[54.8,8.5],[55.4,8.1],[55.8,8.3],[56.5,8.1],[57.0,8.2],[57.5,8.8],[57.7,9.5],[57.5,10.2],[57.8,10.5],[58.0,11.0],[58.5,11.2],[58.9,10.8],[59.0,10.5],[59.5,10.5],[59.9,10.7],[60.4,5.5],[60.8,5.0],[61.2,5.0],[62.0,5.2],[62.5,5.8],[63.0,6.5],[63.5,8.0],[64.0,10.0],[64.5,11.0],[65.0,12.0],[65.5,13.0],[66.0,13.5],[67.0,14.5],[68.0,15.5],[69.0,16.0],[70.0,18.0],[71.0,25.0],[70.5,28.0],[70.0,27.0],[69.5,26.0],[69.0,28.0],[68.5,28.5],[68.0,27.0],[67.5,26.0],[67.0,26.0],[66.5,25.5],[65.5,25.0],[64.5,25.5],[63.5,22.0],[63.0,21.5],[62.5,21.5],[62.0,21.2],[61.5,21.5],[61.0,21.0],[60.5,22.0],[60.0,24.0],[59.8,23.5],[59.5,24.5],[59.3,24.0],[59.0,22.5],[58.5,18.5],[58.0,17.0],[57.5,16.5],[57.0,16.5],[56.5,16.0],[56.0,15.5],[55.5,14.5],[55.3,13.0],[55.4,12.5],[55.7,12.6],[55.8,12.9],[56.0,12.5],[56.0,11.5],[55.5,11.0],[55.2,11.5],[55.0,10.5],[54.8,9.8],[54.6,9.6],[54.8,8.5]],
+        france: [[51.0,2.5],[50.9,1.6],[50.0,1.5],[49.5,0.2],[49.0,0.0],[48.7,-1.5],[48.5,-2.8],[48.6,-3.5],[48.3,-4.5],[48.0,-4.8],[47.7,-4.3],[47.3,-3.5],[47.3,-2.8],[47.0,-2.3],[46.5,-1.8],[46.2,-1.2],[45.5,-1.2],[44.5,-1.2],[43.5,-1.5],[43.3,-1.8],[42.7,-0.5],[42.5,0.5],[42.5,3.0],[43.0,3.3],[43.3,3.7],[43.3,5.0],[43.1,6.0],[43.5,6.5],[43.7,7.2],[43.8,7.5],[44.5,7.0],[45.0,7.0],[45.8,7.0],[46.2,6.2],[46.5,6.5],[47.0,6.8],[47.5,7.5],[48.0,7.8],[48.5,7.8],[49.0,8.2],[49.5,6.5],[49.5,5.5],[50.0,4.5],[50.5,4.0],[50.8,3.5],[51.0,2.5]],
+        iberia: [[43.5,-1.5],[43.5,-2.5],[43.4,-3.8],[43.4,-5.5],[43.2,-7.0],[43.0,-8.5],[42.8,-9.0],[42.3,-8.8],[42.0,-8.9],[41.5,-8.9],[41.0,-8.8],[40.5,-8.8],[39.5,-9.3],[38.8,-9.4],[38.3,-9.0],[37.8,-8.8],[37.0,-8.0],[36.7,-7.5],[36.1,-6.3],[36.0,-5.6],[36.2,-5.4],[36.8,-4.0],[36.7,-3.0],[36.8,-2.0],[37.5,-1.0],[38.0,-0.5],[38.5,0.0],[39.0,-0.2],[39.5,0.5],[40.0,0.5],[40.5,0.3],[41.0,0.8],[41.5,1.5],[42.0,2.5],[42.3,3.0],[42.5,3.0],[42.7,-0.5],[43.3,-1.8],[43.5,-1.5]],
+        italy: [[44.0,7.5],[44.5,7.0],[45.0,7.0],[45.5,7.5],[45.8,8.5],[45.5,9.0],[45.7,10.5],[45.5,11.0],[45.2,12.0],[45.4,12.5],[45.5,13.5],[45.8,13.8],[44.5,12.5],[44.0,12.5],[43.5,13.5],[43.0,14.0],[42.5,14.5],[42.0,15.0],[41.5,15.5],[41.0,16.0],[40.5,17.0],[40.0,18.0],[39.5,18.5],[39.0,17.0],[38.5,16.5],[38.0,15.6],[37.5,15.1],[37.9,14.5],[38.0,13.5],[38.2,13.0],[38.0,12.8],[37.5,12.5],[37.2,12.0],[37.5,11.5],[38.0,12.5],[38.5,12.8],[39.0,16.0],[39.5,16.5],[40.0,16.5],[40.5,15.0],[41.0,14.0],[41.2,13.5],[41.5,12.8],[41.8,12.2],[42.0,11.5],[42.5,11.2],[43.0,10.5],[43.5,10.0],[44.0,9.5],[44.0,8.5],[44.0,7.5]],
+        sicily: [[38.3,12.5],[38.3,13.0],[38.0,13.5],[37.5,15.1],[37.0,15.3],[36.7,15.0],[37.0,14.0],[37.5,12.5],[38.3,12.5]],
+        sardinia: [[41.3,8.2],[41.3,9.8],[39.8,9.8],[39.0,8.2],[40.0,8.2],[41.3,8.2]],
+        corsica: [[43.0,9.0],[43.0,9.6],[42.0,9.6],[41.4,9.2],[42.0,8.6],[43.0,9.0]],
+        crete: [[35.6,23.5],[35.6,26.3],[35.0,26.3],[34.9,24.0],[35.6,23.5]],
+        cyprus: [[35.7,32.2],[35.7,34.6],[34.6,34.0],[34.6,33.0],[35.0,32.2],[35.7,32.2]],
+        malta_island: [[36.1,14.2],[36.1,14.6],[35.8,14.6],[35.8,14.2],[36.1,14.2]],
+        balkans_greece: [[46.5,13.5],[46.8,15.0],[46.3,16.0],[45.5,19.0],[44.5,20.0],[43.5,22.5],[42.0,23.0],[41.5,24.0],[41.0,24.5],[40.5,24.0],[40.0,24.0],[40.0,23.5],[39.5,22.5],[39.0,23.0],[38.5,23.5],[38.0,24.0],[37.8,24.5],[37.5,23.5],[37.0,22.5],[36.5,22.5],[36.4,22.0],[36.8,21.8],[37.5,21.5],[38.2,21.5],[38.8,21.0],[39.0,20.5],[39.5,20.0],[40.0,19.5],[40.5,19.5],[41.0,19.5],[41.5,19.3],[42.0,18.5],[42.5,18.5],[43.0,17.5],[43.5,16.5],[43.8,16.0],[44.0,15.5],[44.5,14.5],[45.0,14.0],[45.5,13.5],[46.5,13.5]],
+        turkey: [[42.0,26.0],[42.0,28.0],[41.3,29.0],[41.0,29.0],[40.8,29.5],[41.2,30.0],[41.5,32.0],[42.0,33.0],[42.0,35.0],[41.5,36.0],[41.0,37.0],[40.5,38.0],[40.0,40.0],[39.5,41.0],[39.0,41.5],[38.5,42.0],[38.0,42.5],[37.5,42.0],[37.0,41.0],[36.5,40.0],[36.0,37.5],[36.0,36.0],[36.5,35.0],[36.5,34.0],[36.8,33.0],[36.5,32.0],[36.8,30.0],[37.0,29.0],[37.5,27.5],[38.0,26.5],[38.5,26.5],[39.0,26.5],[39.5,26.3],[40.0,26.0],[40.5,26.0],[41.0,26.0],[42.0,26.0]],
+        // Continental Europe (Germany, Benelux, Poland, Baltic, E. Europe, connecting France–Scandinavia–Balkans)
+        continental_europe: [
+          // North Sea coast: Belgium → Netherlands → Germany → base of Jutland
+          [51.0,2.5],[51.3,3.5],[51.9,4.2],[52.3,4.5],[52.8,5.0],[53.2,5.5],[53.5,6.5],[53.8,7.5],[54.2,8.2],[54.8,8.5],
+          // South shore of Baltic: Germany → Poland → Baltics
+          [54.5,9.5],[54.3,10.5],[54.0,11.5],[54.2,12.5],[54.5,13.5],[54.3,14.5],[54.5,16.0],[54.8,18.0],[54.5,19.5],
+          // Kaliningrad → Lithuania → Latvia → Estonia
+          [55.5,20.5],[56.0,21.0],[56.5,21.5],[57.0,22.0],[57.5,23.5],[58.0,24.5],[58.5,24.0],[59.0,24.5],[59.5,25.0],
+          // Gulf of Finland → into Russia
+          [59.8,27.0],[60.0,30.0],[61.0,32.0],[62.5,34.0],[65.0,36.0],[68.0,38.0],[70.0,40.0],
+          // East edge — deep Russia/Ukraine (simplified)
+          [68.0,48.0],[60.0,50.0],[55.0,48.0],[50.0,45.0],[47.0,42.0],
+          // Southeast — through Caucasus area
+          [44.0,42.0],[42.0,42.0],[42.0,40.0],[41.0,37.0],[42.0,35.0],[42.0,33.0],[42.0,28.0],
+          // West along Balkans north edge (overlaps slightly with balkans polygon)
+          [44.0,26.0],[45.5,20.0],[46.5,16.0],[46.8,15.0],[46.5,13.5],
+          // Alps → Swiss → back to France NE
+          [47.0,12.0],[47.2,10.5],[47.5,8.5],[48.0,7.8],[49.0,8.2],[49.5,6.5],[50.0,4.5],[50.5,3.5],[51.0,2.5]
+        ],
+        // Danish Islands
+        zealand: [[55.95,11.3],[56.1,12.0],[55.8,12.6],[55.3,12.5],[55.2,11.8],[55.0,11.5],[55.3,11.0],[55.6,11.0],[55.95,11.3]],
+        funen: [[55.6,9.8],[55.6,10.7],[55.1,10.7],[55.0,10.0],[55.2,9.8],[55.6,9.8]],
+        lolland_falster: [[54.9,11.2],[55.0,12.2],[54.6,12.2],[54.5,11.5],[54.6,11.2],[54.9,11.2]],
+        bornholm: [[55.3,14.7],[55.3,15.2],[55.0,15.2],[55.0,14.7],[55.3,14.7]],
+        gotland: [[57.9,18.1],[57.9,18.9],[57.2,18.9],[57.2,18.1],[57.9,18.1]],
+      };
+      var COAST_OPEN = {
+        north_africa: [[37.5,-1.0],[37.0,-2.0],[36.8,-3.0],[36.0,-5.6],[35.8,-5.8],[35.2,-5.5],[35.2,-4.0],[35.0,-2.0],[35.5,-1.0],[36.0,0.0],[36.5,1.0],[36.8,3.0],[37.0,5.0],[37.0,7.0],[37.3,8.5],[37.0,9.5],[37.2,10.0],[37.5,11.0],[34.0,11.5],[33.0,12.0],[32.5,13.5],[32.0,15.0],[31.0,18.0],[31.5,20.0],[31.5,25.0],[31.2,27.0],[31.3,30.0],[31.5,32.0],[31.5,34.5],[32.0,34.8],[32.5,35.0],[33.0,35.5],[34.0,35.8],[35.0,36.0],[36.0,36.0]],
+        middle_east: [[36.0,36.0],[36.5,37.5],[37.0,41.0],[37.5,42.0],[38.0,42.5],[37.0,44.0],[35.0,46.0],[32.0,47.0],[30.0,48.5],[28.0,50.0],[26.0,50.5],[24.0,51.5],[22.0,51.0],[20.0,50.0],[18.0,48.0],[15.0,43.0],[13.0,44.0],[12.5,43.0],[12.8,42.0],[16.0,40.0],[20.0,38.0],[25.0,35.0],[28.0,34.0],[30.0,33.0],[31.5,32.0]],
+      };
+      var RIVERS = {
+        'Thames': [[51.5,-0.1],[51.4,0.5],[51.5,1.0]],
+        'Rhine': [[47.5,7.5],[48.5,8.0],[49.5,8.3],[50.5,7.5],[51.0,7.0],[51.5,6.5],[52.0,5.5]],
+        'Danube': [[48.5,9.0],[48.2,12.0],[47.5,16.0],[47.0,18.5],[46.0,19.0],[45.5,20.0],[44.5,22.5],[44.0,26.0],[44.5,29.0]],
+        'Seine': [[48.9,2.3],[49.2,1.0],[49.5,0.2]],
+        'Shannon': [[52.7,-8.5],[53.0,-8.0],[53.5,-8.5]],
+        'Nile': [[31.3,30.5],[30.0,31.0],[27.0,31.5],[24.0,33.0]],
+        'Elbe': [[50.8,14.0],[51.5,12.5],[52.5,11.5],[53.5,10.0],[54.0,9.5]],
+        'Oder': [[50.0,17.5],[51.0,16.5],[52.5,14.5],[53.5,14.0],[54.0,14.0]],
+        'Vistula': [[50.0,20.0],[51.0,20.5],[52.0,21.0],[53.5,19.5],[54.5,18.5]],
+        'Dnieper': [[48.5,35.0],[50.0,34.0],[52.0,31.0],[54.0,30.0],[55.0,28.5]],
+        'Volga': [[48.5,44.5],[50.0,42.0],[52.5,41.0],[55.0,40.0],[57.0,39.0]],
+      };
+      var SEA_LABELS = [
+        ["MARE ATLANTICUM",48.0,-15.0,14],
+        ["MARE NOSTRUM",38.0,10.0,13],
+        ["MARE GERMANICUM",56.0,3.0,10],
+        ["Mare Hibernicum",53.5,-5.5,8],
+        ["Fretum Britannicum",50.0,-1.5,8],
+        ["MARE BALTICUM",58.0,17.0,12],
+        ["Pontus Euxinus",43.5,34.0,10],
+        ["Sinus Bothnius",63.0,19.0,9],
+      ];
 
-      // ======== COLORS ========
-      var C = {
-        primacy:'#8b1a1a', archbishopric:'#5e3a7e', diocese:'#1e3a6e', abbey:'#c9a84c',
-        vacant:'#777', nonInsular:'#555', clementine:'#cc3333', jp1:'#7744bb',
-        orthodox:'#2e7d32', coptic:'#8d6e63', gold:'#c9a84c'
+      // ======== PALETTE ========
+      var P = {
+        sea: '#1a2840', seaLight: '#243452',
+        land: '#c8b88a', landStroke: '#a09060', landLight: '#d4c8a0',
+        river: '#4a7ab5', riverLight: '#5a8ac5',
+        mtn: '#8a7a60',
+        primacy:'#8b1a1a', archbishopric:'#5e3a7e', diocese:'#1e3a6e',
+        abbey:'#c9a84c', vacant:'#777', nonInsular:'#555',
+        clementine:'#cc3333', jp1:'#7744bb',
+        orthodox:'#2e7d32', coptic:'#8d6e63', gold:'#c9a84c',
+        contested:'#ff8800',
+        parchment:'#f0e4c8',
       };
 
-      // ======== SVG ICON HELPERS ========
-      function svgMitre(fill, stroke, w, h) {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 28" width="'+w+'" height="'+h+'">' +
-          '<path d="M10 1L3 12V20L10 27L17 20V12Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5" stroke-linejoin="round"/>' +
-          '<path d="M10 1V27M3 16H17" stroke="'+stroke+'" stroke-width="0.7" fill="none"/></svg>';
-      }
-      function svgKeys(col, w) {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14" width="'+w+'" height="'+(w*0.7)+'" style="display:block;margin:-2px auto 0;">' +
-          '<line x1="3" y1="2" x2="17" y2="12" stroke="'+col+'" stroke-width="2" stroke-linecap="round"/>' +
-          '<line x1="17" y1="2" x2="3" y2="12" stroke="'+col+'" stroke-width="2" stroke-linecap="round"/>' +
-          '<circle cx="3" cy="2" r="2" fill="none" stroke="'+col+'" stroke-width="1.2"/>' +
-          '<circle cx="17" cy="2" r="2" fill="none" stroke="'+col+'" stroke-width="1.2"/></svg>';
-      }
-      function svgTiara(fill, stroke, w, h) {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 30" width="'+w+'" height="'+h+'">' +
-          '<ellipse cx="10" cy="27" rx="8" ry="3" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/>' +
-          '<rect x="4" y="18" width="12" height="9" rx="1" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/>' +
-          '<rect x="5" y="11" width="10" height="8" rx="1" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/>' +
-          '<rect x="6" y="5" width="8" height="7" rx="1" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/>' +
-          '<path d="M8 5Q10 0 12 5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/>' +
-          '<circle cx="10" cy="2" r="1.5" fill="'+stroke+'"/></svg>';
-      }
-      function svgOrthodox(col, w, h) {
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 30" width="'+w+'" height="'+h+'">' +
-          '<line x1="10" y1="1" x2="10" y2="29" stroke="'+col+'" stroke-width="2.5"/>' +
-          '<line x1="5" y1="7" x2="15" y2="7" stroke="'+col+'" stroke-width="2"/>' +
-          '<line x1="4" y1="14" x2="16" y2="14" stroke="'+col+'" stroke-width="2"/>' +
-          '<line x1="6" y1="22" x2="14" y2="25" stroke="'+col+'" stroke-width="2"/></svg>';
+      // ======== SVG ICON HELPERS (same as before) ========
+      function svgMitre(fill,stroke,w,h){return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 28" width="'+w+'" height="'+h+'"><path d="M10 1L3 12V20L10 27L17 20V12Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 1V27M3 16H17" stroke="'+stroke+'" stroke-width="0.7" fill="none"/></svg>';}
+      function svgKeys(col,w){return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 14" width="'+w+'" height="'+(w*0.7)+'" style="display:block;margin:-2px auto 0;"><line x1="3" y1="2" x2="17" y2="12" stroke="'+col+'" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="2" x2="3" y2="12" stroke="'+col+'" stroke-width="2" stroke-linecap="round"/><circle cx="3" cy="2" r="2" fill="none" stroke="'+col+'" stroke-width="1.2"/><circle cx="17" cy="2" r="2" fill="none" stroke="'+col+'" stroke-width="1.2"/></svg>';}
+      function svgTiara(fill,stroke,w,h){return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 30" width="'+w+'" height="'+h+'"><ellipse cx="10" cy="27" rx="8" ry="3" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/><rect x="4" y="18" width="12" height="9" rx="1" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/><rect x="5" y="11" width="10" height="8" rx="1" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/><rect x="6" y="5" width="8" height="7" rx="1" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/><path d="M8 5Q10 0 12 5" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1"/><circle cx="10" cy="2" r="1.5" fill="'+stroke+'"/></svg>';}
+      function svgOrthodox(col,w,h){return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 30" width="'+w+'" height="'+h+'"><line x1="10" y1="1" x2="10" y2="29" stroke="'+col+'" stroke-width="2.5"/><line x1="5" y1="7" x2="15" y2="7" stroke="'+col+'" stroke-width="2"/><line x1="4" y1="14" x2="16" y2="14" stroke="'+col+'" stroke-width="2"/><line x1="6" y1="22" x2="14" y2="25" stroke="'+col+'" stroke-width="2"/></svg>';}
+
+      function createIcon(s){
+        var isV=s.status==='vacant'||s.status==='forthcoming'||s.status==='abeyance';
+        var html='',sz=[24,30],an=[12,15];
+        if(s.type==='rival_pope'){var tc=s.faction==='clementine'?P.clementine:P.jp1;html='<div style="text-align:center;filter:drop-shadow(0 0 5px '+tc+');">'+svgTiara('#fff',tc,22,30)+'</div>';sz=[22,30];an=[11,15];}
+        else if(s.type==='patriarch'){var oc=s.faction==='coptic'?P.coptic:P.orthodox;html='<div style="text-align:center;filter:drop-shadow(0 0 6px '+oc+');">'+svgOrthodox(oc,18,26)+'</div>';sz=[18,26];an=[9,13];}
+        else if(s.rank==='primacy'&&s.note&&s.note.indexOf('First Among Equals')>=0){html='<div style="text-align:center;filter:drop-shadow(0 0 8px #c9a84c) drop-shadow(0 0 16px #8b1a1a);">'+svgMitre('#fff',P.gold,24,32)+svgKeys(P.gold,18)+'</div>';sz=[24,44];an=[12,22];}
+        else if(s.rank==='primacy'){var fc=isV?P.vacant:P.primacy;html='<div style="text-align:center;filter:drop-shadow(0 0 6px '+fc+');">'+svgMitre('#fff',fc,20,28)+'</div>';sz=[20,28];an=[10,14];}
+        else if(s.rank==='archbishopric'){var ac=isV?P.vacant:P.archbishopric;html='<div style="text-align:center;'+(isV?'opacity:0.6;':'')+'filter:drop-shadow(0 0 4px '+ac+');">'+svgMitre('#fff',ac,16,22)+'</div>';sz=[16,22];an=[8,11];}
+        else if(s.rank==='abbey'){var abC=isV?P.vacant:P.abbey;html='<div style="font-size:16px;color:'+abC+';text-shadow:0 0 4px rgba(0,0,0,0.8);line-height:1;">✟</div>';sz=[16,16];an=[8,8];}
+        else if(s.type==='nonInsular'){html='<div style="width:8px;height:8px;border-radius:50%;background:'+P.nonInsular+';border:1px solid rgba(200,184,138,0.4);opacity:0.7;"></div>';sz=[8,8];an=[4,4];}
+        else{var dc=isV?P.vacant:P.diocese;html='<div style="text-align:center;'+(isV?'opacity:0.6;':'')+'filter:drop-shadow(0 0 3px '+dc+');">'+svgMitre('#fff',dc,13,18)+'</div>';sz=[13,18];an=[7,9];}
+        return L.divIcon({className:'',iconSize:sz,iconAnchor:an,popupAnchor:[0,-an[1]-4],html:html});
       }
 
-      // ======== MARKER ICON FACTORY ========
-      function createIcon(s) {
-        var isVacant = s.status==='vacant'||s.status==='forthcoming'||s.status==='abeyance';
-        var html='', size=[24,30], anchor=[12,15];
-
-        if (s.type === 'rival_pope') {
-          var tc = s.faction==='clementine'?C.clementine:C.jp1;
-          html = '<div style="text-align:center;filter:drop-shadow(0 0 5px '+tc+');">'+svgTiara('#fff',tc,22,30)+'</div>';
-          size=[22,30]; anchor=[11,15];
-        } else if (s.type === 'patriarch') {
-          var oc = s.faction==='coptic'?C.coptic:C.orthodox;
-          html = '<div style="text-align:center;filter:drop-shadow(0 0 6px '+oc+');">'+svgOrthodox(oc,18,26)+'</div>';
-          size=[18,26]; anchor=[9,13];
-        } else if (s.rank === 'primacy' && s.note && s.note.indexOf('First Among Equals')>=0) {
-          // Armagh — large mitre + keys
-          html = '<div style="text-align:center;filter:drop-shadow(0 0 8px #c9a84c) drop-shadow(0 0 16px #8b1a1a);">' +
-            svgMitre('#fff',C.gold,24,32) + svgKeys(C.gold,18) + '</div>';
-          size=[24,44]; anchor=[12,22];
-        } else if (s.rank === 'primacy') {
-          var fc = isVacant?C.vacant:C.primacy;
-          html = '<div style="text-align:center;filter:drop-shadow(0 0 6px '+fc+');">'+svgMitre('#fff',fc,20,28)+'</div>';
-          size=[20,28]; anchor=[10,14];
-        } else if (s.rank === 'archbishopric') {
-          var ac = isVacant?C.vacant:C.archbishopric;
-          var bd = isVacant?'opacity:0.6;':'';
-          html = '<div style="text-align:center;'+bd+'filter:drop-shadow(0 0 4px '+ac+');">'+svgMitre('#fff',ac,16,22)+'</div>';
-          size=[16,22]; anchor=[8,11];
-        } else if (s.rank === 'abbey') {
-          var abC = isVacant?C.vacant:C.abbey;
-          html = '<div style="font-size:16px;color:'+abC+';text-shadow:0 0 4px #000,0 0 8px #000;line-height:1;">✟</div>';
-          size=[16,16]; anchor=[8,8];
-        } else if (s.type === 'nonInsular') {
-          html = '<div style="width:8px;height:8px;border-radius:50%;background:'+C.nonInsular+';border:1px solid rgba(240,228,200,0.4);opacity:0.7;"></div>';
-          size=[8,8]; anchor=[4,4];
-        } else {
-          // diocese / bishop
-          var dc = isVacant?C.vacant:C.diocese;
-          var dop = isVacant?'opacity:0.6;':'';
-          html = '<div style="text-align:center;'+dop+'filter:drop-shadow(0 0 3px '+dc+');">'+svgMitre('#fff',dc,13,18)+'</div>';
-          size=[13,18]; anchor=[7,9];
-        }
-
-        return L.divIcon({ className:'', iconSize:size, iconAnchor:anchor, popupAnchor:[0,-anchor[1]-4], html:html });
-      }
-
-      // ======== POPUP FACTORY ========
-      function buildPopup(s) {
-        var rankLabel, color;
-        if (s.type==='rival_pope') { rankLabel='RIVAL PAPACY'; color=s.faction==='clementine'?C.clementine:C.jp1; }
-        else if (s.type==='patriarch') { rankLabel=s.rank.toUpperCase(); color=s.faction==='coptic'?C.coptic:C.orthodox; }
-        else if (s.type==='nonInsular') { rankLabel='SECULAR CITY'; color=C.nonInsular; }
-        else {
-          rankLabel = s.rank==='primacy'?'PRIMATIAL SEE':s.rank==='archbishopric'?'ARCHBISHOPRIC':s.rank==='abbey'?'ABBEY':'DIOCESE';
-          color = (s.status!=='filled')?C.vacant:C[s.rank]||C.diocese;
-        }
-        var statusLabel;
-        if (s.type==='rival_pope') statusLabel='<strong style="color:'+color+';">'+s.holder+'</strong>';
-        else if (s.type==='patriarch') statusLabel='<strong style="color:'+color+';">'+s.holder+'</strong>';
-        else if (s.type==='nonInsular') statusLabel='<em style="color:#555;">Not of the Insular Communion</em>';
-        else if (s.status==='vacant') statusLabel='<em style="color:#8b1a1a;">Sede vacante</em>';
-        else if (s.status==='forthcoming') statusLabel='<em style="color:#777;">To be appointed</em>';
-        else if (s.status==='abeyance') statusLabel='<em style="color:#c8b88a;">In abeyance</em>';
-        else statusLabel='<strong style="color:#1e3a6e;">'+s.holder+'</strong>';
-
-        var h = '<div class="popup-rank" style="background:'+color+';">'+rankLabel+'</div>';
-        h += '<div class="popup-title">'+s.name+'</div>';
-        h += '<div class="popup-holder">'+statusLabel+'</div>';
-        if (s.note) h += '<div style="font-size:0.82rem;color:#4a3520;margin-top:0.25rem;font-style:italic;">'+s.note+'</div>';
-        if (s.province) h += '<div class="popup-nation">'+s.province+(s.nation?' · '+s.nation:'')+'</div>';
-        if (s.patrons) h += '<div style="font-size:0.78rem;color:#4a3520;margin-top:0.3rem;border-top:1px solid rgba(201,168,76,0.3);padding-top:0.3rem;"><strong>Patron Nations:</strong> '+s.patrons+'</div>';
+      function buildPopup(s){
+        var rl,col;
+        if(s.type==='rival_pope'){rl='RIVAL PAPACY';col=s.faction==='clementine'?P.clementine:P.jp1;}
+        else if(s.type==='patriarch'){rl=s.rank.toUpperCase();col=s.faction==='coptic'?P.coptic:P.orthodox;}
+        else if(s.type==='nonInsular'){rl='SECULAR CITY';col=P.nonInsular;}
+        else{rl=s.rank==='primacy'?'PRIMATIAL SEE':s.rank==='archbishopric'?'ARCHBISHOPRIC':s.rank==='abbey'?'ABBEY':'DIOCESE';col=(s.status!=='filled')?P.vacant:P[s.rank]||P.diocese;}
+        var sl;
+        if(s.type==='rival_pope')sl='<strong style="color:'+col+';">'+s.holder+'</strong>';
+        else if(s.type==='patriarch')sl='<strong style="color:'+col+';">'+s.holder+'</strong>';
+        else if(s.type==='nonInsular')sl='<em style="color:#555;">Not of the Insular Communion</em>';
+        else if(s.status==='vacant')sl='<em style="color:#8b1a1a;">Sede vacante</em>';
+        else if(s.status==='forthcoming')sl='<em style="color:#777;">To be appointed</em>';
+        else if(s.status==='abeyance')sl='<em style="color:#c8b88a;">In abeyance</em>';
+        else sl='<strong style="color:#1e3a6e;">'+s.holder+'</strong>';
+        var h='<div class="popup-rank" style="background:'+col+';">'+rl+'</div>';
+        h+='<div class="popup-title">'+s.name+'</div><div class="popup-holder">'+sl+'</div>';
+        if(s.note)h+='<div style="font-size:0.82rem;color:#4a3520;margin-top:0.25rem;font-style:italic;">'+s.note+'</div>';
+        if(s.province)h+='<div class="popup-nation">'+s.province+(s.nation?' · '+s.nation:'')+'</div>';
+        if(s.patrons)h+='<div style="font-size:0.78rem;color:#4a3520;margin-top:0.3rem;border-top:1px solid rgba(201,168,76,0.3);padding-top:0.3rem;"><strong>Patron Nations:</strong> '+s.patrons+'</div>';
         return h;
       }
 
-      // ==================================================================
-      //  SETTLEMENT DATA
-      // ==================================================================
+      // ======== SETTLEMENT DATA ========
       var sees = [
-        // ===== PRIMACY OF IRELAND =====
-        { name:'Armagh',        lat:54.35, lng:-6.65,  rank:'primacy',       holder:'Archbishop Corpo of Armagh', province:'Primacy of Ireland', nation:'Capital of Oriel', status:'filled', note:'First Among Equals · Seat of the Comharba Pátraic · Primate of All Ireland', group:'ireland' },
-        { name:'Bantry',        lat:51.68, lng:-9.45,  rank:'diocese',       holder:null, province:'Primacy of Ireland', nation:'Kingdom of the Marches', status:'vacant', note:'Near County Cork', group:'ireland' },
-        { name:'Mourne',        lat:54.15, lng:-6.0,   rank:'diocese',       holder:null, province:'Primacy of Ireland', nation:'Oriel (Ulster)', status:'vacant', group:'ireland' },
-        { name:'Peel Castle',   lat:54.23, lng:-4.69,  rank:'diocese',       holder:null, province:'Primacy of Ireland', nation:'Kingdom of the Marches · Isle of Man', status:'vacant', note:'Isle of Man', group:'ireland' },
-
-        // Non-Insular Ireland
-        { name:'Clonmel',       lat:52.35, lng:-7.70,  rank:'diocese', holder:null, province:'Kingdom of Ormond', nation:'Not Insular', status:'vacant', type:'nonInsular', group:'ireland' },
-
-        // ===== ARCHDIOCESE OF SCOTLAND (under Primacy of N. Britannia) =====
-        { name:'Edinburgh',     lat:55.95, lng:-3.19,  rank:'archbishopric', holder:'Bishop Nathan of St. Andrews', province:'Archdiocese of Scotland', nation:'Capital of N. Britannia', status:'filled', note:'Home of the Archdiocesan See of St. Andrews', group:'scotland' },
-        { name:'Appin',         lat:56.55, lng:-5.42,  rank:'diocese',       holder:null, province:'Archdiocese of Scotland', nation:'Kingdom of N. Britannia', status:'vacant', note:'NW Highlands', group:'scotland' },
-        { name:'Kindrochit',    lat:57.00, lng:-3.40,  rank:'diocese',       holder:null, province:'Archdiocese of Scotland', nation:'Kingdom of N. Britannia', status:'vacant', note:'Northern Scotland, near Braemar', group:'scotland' },
-        { name:'Drummore',      lat:54.69, lng:-4.87,  rank:'diocese',       holder:null, province:'Archdiocese of Scotland', nation:'Kingdom of N. Britannia', status:'vacant', note:'SW tip of Scotland', group:'scotland' },
-
-        // Non-Insular Scotland
-        { name:'Aberdeen',      lat:57.15, lng:-2.09,  rank:'diocese', holder:null, province:'Archdiocese of Scotland', nation:'Kingdom of Scotland', status:'vacant', type:'nonInsular', note:'Within Archdiocese limits, not yet Insular', group:'scotland' },
-        { name:'Stirling',      lat:56.12, lng:-3.94,  rank:'diocese', holder:null, province:'Archdiocese of Scotland', nation:'Capital of Kingdom of Scotland', status:'vacant', type:'nonInsular', note:'Within Archdiocese limits, not yet Insular', group:'scotland' },
-
-        // ===== ARCHDIOCESE OF NORTHUMBRIA (under Primacy of N. Britannia) =====
-        { name:'York',          lat:53.96, lng:-1.08,  rank:'primacy',       holder:'Archbishop Acutis of York', province:'Primacy of Northern Britannia', nation:'Kingdom of N. Britannia', status:'filled', note:'PRIMATE OF NORTHERN BRITANNIA · Archdiocesan See of Northumbria · Has dominion over Scotland', group:'northumbria' },
-        { name:'Bamburgh',      lat:55.61, lng:-1.71,  rank:'diocese',       holder:null, province:'Archdiocese of Northumbria', nation:'Kingdom of the Marches', status:'vacant', group:'northumbria' },
-        { name:'Lowther Castle', lat:54.56, lng:-2.64, rank:'diocese',       holder:null, province:'Archdiocese of Northumbria', nation:'Kingdom of N. Britannia', status:'vacant', note:'Cumbria', group:'northumbria' },
-        { name:'Windermere',    lat:54.38, lng:-2.91,  rank:'diocese',       holder:null, province:'Archdiocese of Northumbria', nation:'Kingdom of N. Britannia', status:'vacant', note:'Lake District', group:'northumbria' },
-        { name:'Dearnecaster',  lat:53.52, lng:-1.13,  rank:'diocese',       holder:null, province:'Archdiocese of Northumbria', nation:'Kingdom of N. Britannia', status:'vacant', note:'Southern limit of Northumbria', group:'northumbria' },
-
-        // ===== ARCHDIOCESE & PRIMACY OF WALES =====
-        { name:'St. Davids',    lat:51.88, lng:-5.27,  rank:'primacy',       holder:'Archbishop Claude of St. Davids', province:'Primacy of Wales', nation:'Kingdom of the Marches', status:'filled', note:'PRIMATE OF WALES · Abbot of St. Davids', group:'wales' },
-        { name:'Caerdydd',      lat:51.48, lng:-3.18,  rank:'diocese',       holder:'Bishop Daryl of Caerdydd', province:'Primacy of Wales', nation:'Kingdom of the Marches', status:'filled', note:'Cardiff', group:'wales' },
-        { name:'Caernarfon',    lat:53.14, lng:-4.27,  rank:'diocese',       holder:'Bishop Tabar of Caernarfon', province:'Primacy of Wales', nation:'Kingdom of the Marches', status:'filled', note:'Capital of Wales', group:'wales' },
-        { name:'Chester',       lat:53.19, lng:-2.89,  rank:'diocese',       holder:'Bishop Texas of Chester', province:'Primacy of Wales', nation:'Kingdom of the Marches', status:'filled', group:'wales' },
-        { name:'Shrewsbury',    lat:52.71, lng:-2.75,  rank:'diocese',       holder:null, province:'Primacy of Wales', nation:'Kingdom of the Marches', status:'vacant', group:'wales' },
-
-        // ===== ARCHDIOCESE & PRIMACY OF ENGLAND (Canterbury) =====
-        { name:'Canterbury',    lat:51.28, lng:1.08,   rank:'primacy',       holder:'Archbishop Ellis of Canterbury', province:'Primacy of the Anglo-Saxons', nation:'Kingdom of England', status:'filled', note:'PRIMATE OF THE ANGLO-SAXONS', group:'england' },
-        { name:'Londres',       lat:51.51, lng:-0.09,  rank:'diocese',       holder:'Bishop Yoresh of Londres', province:'Archdiocese of England', nation:'Kingdom of England', status:'filled', note:'London', group:'england' },
-        { name:'Glevum',        lat:51.87, lng:-2.24,  rank:'diocese',       holder:null, province:'Archdiocese of England', nation:'Kingdom of England', status:'vacant', note:'Gloucester', group:'england' },
-        { name:'Nottingham',    lat:52.95, lng:-1.15,  rank:'diocese',       holder:null, province:'Archdiocese of England', nation:'Kingdom of England', status:'vacant', group:'england' },
-        { name:'East Anglia',   lat:52.63, lng:1.30,   rank:'diocese',       holder:null, province:'Archdiocese of England', nation:'Kingdom of England', status:'vacant', note:'NE settlement of SE England', group:'england' },
-        { name:'Penzance',      lat:50.12, lng:-5.53,  rank:'diocese',       holder:null, province:'Archdiocese of England', nation:'Kingdom of England', status:'vacant', note:'Cornwall', group:'england' },
-
-        // Non-Insular England
-        { name:'Newport',       lat:51.59, lng:-3.00,  rank:'diocese', holder:null, province:'Independent', nation:'Independent Town', status:'vacant', type:'nonInsular', note:'Not of the Insular Communion', group:'england' },
-
-        // ===== FRENCH TERRITORIES (under Primacy of Wales) =====
-        { name:'Calais',        lat:50.95, lng:1.86,   rank:'diocese',       holder:null, province:'Primacy of Wales · France', nation:'Kingdom of the Marches (Overseas)', status:'vacant', note:'Welsh overseas possession', group:'france' },
-        { name:'Harfleur',      lat:49.51, lng:0.21,   rank:'diocese',       holder:null, province:'Primacy of Wales · France', nation:'Kingdom of the Marches (Overseas)', status:'vacant', note:'Welsh overseas possession, near Le Havre', group:'france' },
-
-        // ===== RIVAL PAPACIES =====
-        { name:'Rome',          lat:41.90, lng:12.50,  rank:'primacy', holder:'Pope Clement VII (Invalid)', province:'The Italian Papacy', nation:'Papal States', status:'filled', type:'rival_pope', faction:'clementine', note:'The "Clementine" Papacy — orders invalid, descending from John I', patrons:'Aragon, Saxony, Valois (France), Austria, Teutonic Order', group:'rival' },
-        { name:'Malta',         lat:35.90, lng:14.51,  rank:'primacy', holder:'Pope John Paul I (Invalid)', province:'The Maltese Papacy', nation:'Malta', status:'filled', type:'rival_pope', faction:'jp1', note:'The "JP1" Papacy — orders invalid, descending from John I', patrons:'Papal States, Venice, Antioch, Great Bohemia, Malta, Kingdom of León', group:'rival' },
-
-        // ===== ORTHODOX / COMMUNION SEES =====
-        { name:'Constantinople', lat:41.01, lng:28.98,  rank:'Ecumenical Patriarchate', holder:'Patriarch of Constantinople', province:'In Communion with the Insular Church', nation:'', status:'filled', type:'patriarch', faction:'orthodox', note:'First Among Equals of the Orthodox Churches', group:'orthodox' },
-        { name:'Jerusalem',      lat:31.77, lng:35.23,  rank:'Patriarchate of Jerusalem', holder:'Patriarch of Jerusalem', province:'In Communion with the Insular Church', nation:'', status:'filled', type:'patriarch', faction:'orthodox', note:'Guardian of the Holy Places', group:'orthodox' },
-        { name:'Antioch',        lat:36.20, lng:36.16,  rank:'Patriarchate of Antioch', holder:'Patriarch of Antioch', province:'In Communion with the Insular Church', nation:'', status:'filled', type:'patriarch', faction:'orthodox', note:'Ancient See of St. Peter', group:'orthodox' },
-        { name:'Alexandria',     lat:31.20, lng:29.92,  rank:'Coptic Patriarchate', holder:'Coptic Patriarch of Alexandria', province:'Miaphysite · Not in Communion', nation:'', status:'filled', type:'patriarch', faction:'coptic', note:'The Coptic See of Alexandria — Apostolic succession recognised, but Miaphysite; not in communion with the Insular Church', group:'orthodox' },
+        // PRIMACY OF IRELAND
+        {name:'Armagh',lat:54.35,lng:-6.65,rank:'primacy',holder:'Archbishop Corpo of Armagh',province:'Primacy of Ireland',nation:'Capital of Oriel',status:'filled',note:'First Among Equals · Seat of the Comharba Pátraic · Primate of All Ireland',group:'ireland'},
+        {name:'Bantry',lat:51.68,lng:-9.45,rank:'diocese',holder:null,province:'Primacy of Ireland',nation:'Kingdom of the Marches',status:'vacant',note:'Near County Cork',group:'ireland'},
+        {name:'Mourne',lat:54.15,lng:-6.0,rank:'diocese',holder:null,province:'Primacy of Ireland',nation:'Oriel (Ulster)',status:'vacant',group:'ireland'},
+        {name:'Peel Castle',lat:54.23,lng:-4.69,rank:'diocese',holder:null,province:'Primacy of Ireland',nation:'Kingdom of the Marches · Isle of Man',status:'vacant',note:'Isle of Man',group:'ireland'},
+        {name:'Clonmel',lat:52.35,lng:-7.70,rank:'diocese',holder:null,province:'Kingdom of Ormond',nation:'Not Insular',status:'vacant',type:'nonInsular',group:'ireland'},
+        // ARCHDIOCESE OF SCOTLAND
+        {name:'Edinburgh',lat:55.95,lng:-3.19,rank:'archbishopric',holder:'Bishop Nathan of St. Andrews',province:'Archdiocese of Scotland',nation:'Capital of N. Britannia',status:'filled',note:'Archdiocesan See of St. Andrews',group:'scotland'},
+        {name:'Appin',lat:56.55,lng:-5.42,rank:'diocese',holder:null,province:'Archdiocese of Scotland',nation:'Kingdom of N. Britannia',status:'vacant',note:'NW Highlands',group:'scotland'},
+        {name:'Kindrochit',lat:57.00,lng:-3.40,rank:'diocese',holder:null,province:'Archdiocese of Scotland',nation:'Kingdom of N. Britannia',status:'vacant',note:'Northern Scotland',group:'scotland'},
+        {name:'Drummore',lat:54.69,lng:-4.87,rank:'diocese',holder:null,province:'Archdiocese of Scotland',nation:'Kingdom of N. Britannia',status:'vacant',note:'SW Scotland',group:'scotland'},
+        {name:'Aberdeen',lat:57.15,lng:-2.09,rank:'diocese',holder:null,province:'Archdiocese of Scotland',nation:'Kingdom of Scotland',status:'vacant',type:'nonInsular',note:'Not yet Insular',group:'scotland'},
+        {name:'Stirling',lat:56.12,lng:-3.94,rank:'diocese',holder:null,province:'Archdiocese of Scotland',nation:'Kingdom of Scotland',status:'vacant',type:'nonInsular',note:'Not yet Insular',group:'scotland'},
+        // ARCHDIOCESE OF NORTHUMBRIA
+        {name:'York',lat:53.96,lng:-1.08,rank:'primacy',holder:'Archbishop Acutis of York',province:'Primacy of Northern Britannia',nation:'Kingdom of N. Britannia',status:'filled',note:'PRIMATE OF NORTHERN BRITANNIA · Archdiocesan See of Northumbria',group:'northumbria'},
+        {name:'Bamburgh',lat:55.61,lng:-1.71,rank:'diocese',holder:null,province:'Archdiocese of Northumbria',nation:'Kingdom of the Marches',status:'vacant',group:'northumbria'},
+        {name:'Lowther Castle',lat:54.56,lng:-2.64,rank:'diocese',holder:null,province:'Archdiocese of Northumbria',nation:'Kingdom of N. Britannia',status:'vacant',group:'northumbria'},
+        {name:'Windermere',lat:54.38,lng:-2.91,rank:'diocese',holder:null,province:'Archdiocese of Northumbria',nation:'Kingdom of N. Britannia',status:'vacant',group:'northumbria'},
+        {name:'Dearnecaster',lat:53.52,lng:-1.13,rank:'diocese',holder:null,province:'Archdiocese of Northumbria',nation:'Kingdom of N. Britannia',status:'vacant',note:'Southern limit of Northumbria',group:'northumbria'},
+        // PRIMACY OF WALES
+        {name:'St. Davids',lat:51.88,lng:-5.27,rank:'primacy',holder:'Archbishop Claude of St. Davids',province:'Primacy of Wales',nation:'Kingdom of the Marches',status:'filled',note:'PRIMATE OF WALES · Abbot of St. Davids',group:'wales'},
+        {name:'Caerdydd',lat:51.48,lng:-3.18,rank:'diocese',holder:'Bishop Daryl of Caerdydd',province:'Primacy of Wales',nation:'Kingdom of the Marches',status:'filled',note:'Cardiff',group:'wales'},
+        {name:'Caernarfon',lat:53.14,lng:-4.27,rank:'diocese',holder:'Bishop Tabar of Caernarfon',province:'Primacy of Wales',nation:'Kingdom of the Marches',status:'filled',note:'Capital of Wales',group:'wales'},
+        {name:'Chester',lat:53.19,lng:-2.89,rank:'diocese',holder:'Bishop Texas of Chester',province:'Primacy of Wales',nation:'Kingdom of the Marches',status:'filled',group:'wales'},
+        {name:'Shrewsbury',lat:52.71,lng:-2.75,rank:'diocese',holder:null,province:'Primacy of Wales',nation:'Kingdom of the Marches',status:'vacant',group:'wales'},
+        // PRIMACY OF ENGLAND (Canterbury)
+        {name:'Canterbury',lat:51.28,lng:1.08,rank:'primacy',holder:'Archbishop Ellis of Canterbury',province:'Primacy of the Anglo-Saxons',nation:'Kingdom of England',status:'filled',note:'PRIMATE OF THE ANGLO-SAXONS',group:'england'},
+        {name:'Londres',lat:51.51,lng:-0.09,rank:'diocese',holder:'Bishop Yoresh of Londres',province:'Archdiocese of England',nation:'Kingdom of England',status:'filled',note:'London',group:'england'},
+        {name:'Glevum',lat:51.87,lng:-2.24,rank:'diocese',holder:null,province:'Archdiocese of England',nation:'Kingdom of England',status:'vacant',note:'Gloucester',group:'england'},
+        {name:'Nottingham',lat:52.95,lng:-1.15,rank:'diocese',holder:null,province:'Archdiocese of England',nation:'Kingdom of England',status:'vacant',group:'england'},
+        {name:'East Anglia',lat:52.63,lng:1.30,rank:'diocese',holder:null,province:'Archdiocese of England',nation:'Kingdom of England',status:'vacant',group:'england'},
+        {name:'Penzance',lat:50.12,lng:-5.53,rank:'diocese',holder:null,province:'Archdiocese of England',nation:'Kingdom of England',status:'vacant',note:'Cornwall',group:'england'},
+        {name:'Newport',lat:51.59,lng:-3.00,rank:'diocese',holder:null,province:'Independent',nation:'Independent Town',status:'vacant',type:'nonInsular',group:'england'},
+        // FRENCH TERRITORIES
+        {name:'Calais',lat:50.95,lng:1.86,rank:'diocese',holder:null,province:'Primacy of Wales · France',nation:'Kingdom of the Marches (Overseas)',status:'vacant',group:'france'},
+        {name:'Harfleur',lat:49.51,lng:0.21,rank:'diocese',holder:null,province:'Primacy of Wales · France',nation:'Kingdom of the Marches (Overseas)',status:'vacant',group:'france'},
+        // PRIMACY OF SCANDINAVIA — NORWAY
+        {name:'Oslo',lat:59.91,lng:10.75,rank:'primacy',holder:null,province:'Primacy of Scandinavia',nation:'Kingdom of Norway',status:'forthcoming',note:'PRIMATE OF SCANDINAVIA (Forthcoming) · Seat of the Primacy',group:'norway'},
+        {name:'Stavanger',lat:58.97,lng:5.73,rank:'diocese',holder:null,province:'Primacy of Scandinavia',nation:'Kingdom of Norway',status:'vacant',note:'South Norway',group:'norway'},
+        {name:'Skien',lat:59.21,lng:9.61,rank:'diocese',holder:null,province:'Primacy of Scandinavia',nation:'Kingdom of Norway',status:'vacant',group:'norway'},
+        // PRIMACY OF SCANDINAVIA — ARCHDIOCESE OF DENMARK
+        {name:'Copenhagen',lat:55.68,lng:12.57,rank:'archbishopric',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark',status:'forthcoming',note:'Archdiocesan See of Denmark · Under Primacy of Scandinavia',group:'denmark'},
+        {name:'Jutland',lat:57.40,lng:10.50,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark',status:'vacant',note:'NE corner of Jutland Peninsula',group:'denmark'},
+        {name:'Kolding',lat:55.49,lng:9.47,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark',status:'vacant',group:'denmark'},
+        {name:'Hedeby',lat:54.49,lng:9.57,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark',status:'vacant',note:'Historic Viking settlement · Southernmost Danish city',group:'denmark'},
+        {name:'Lübeck',lat:53.87,lng:10.69,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark (Exclave)',status:'vacant',note:'Danish exclave in Germany',group:'denmark'},
+        {name:'Odense',lat:55.40,lng:10.39,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark · Funen',status:'vacant',group:'denmark'},
+        {name:'Skekkerup',lat:55.30,lng:11.20,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark · Zealand',status:'vacant',group:'denmark'},
+        {name:'Marlbo',lat:54.78,lng:11.50,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark · Lolland',status:'vacant',note:'Maribo',group:'denmark'},
+        {name:'Trelleborg',lat:55.38,lng:13.16,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark · Scania',status:'vacant',note:'Historically Danish territory',group:'denmark'},
+        {name:'Nyborg',lat:55.31,lng:10.79,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark · Funen',status:'vacant',group:'denmark'},
+        {name:'Bikerd',lat:55.50,lng:11.80,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark · Zealand',status:'vacant',group:'denmark'},
+        {name:'Nygard',lat:55.10,lng:10.05,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark',status:'vacant',group:'denmark'},
+        {name:'Havnemark',lat:54.90,lng:12.00,rank:'diocese',holder:null,province:'Archdiocese of Denmark',nation:'Kingdom of Denmark · Falster',status:'vacant',group:'denmark'},
+        // RIVAL PAPACIES
+        {name:'Rome',lat:41.90,lng:12.50,rank:'primacy',holder:'Pope Clement VII (Invalid)',province:'The Italian Papacy',nation:'Papal States',status:'filled',type:'rival_pope',faction:'clementine',note:'The "Clementine" Papacy — orders invalid',patrons:'Aragon, Saxony, Valois (France), Austria, Teutonic Order',group:'rival'},
+        {name:'Malta',lat:35.90,lng:14.51,rank:'primacy',holder:'Pope John Paul I (Invalid)',province:'The Maltese Papacy',nation:'Malta',status:'filled',type:'rival_pope',faction:'jp1',note:'The "JP1" Papacy — orders invalid',patrons:'Papal States, Venice, Antioch, Great Bohemia, Malta, Kingdom of León',group:'rival'},
+        // ORTHODOX / COMMUNION SEES
+        {name:'Constantinople',lat:41.01,lng:28.98,rank:'Ecumenical Patriarchate',holder:'Patriarch of Constantinople',province:'In Communion with the Insular Church',nation:'',status:'filled',type:'patriarch',faction:'orthodox',note:'First Among Equals of the Orthodox Churches',group:'orthodox'},
+        {name:'Jerusalem',lat:31.77,lng:35.23,rank:'Patriarchate of Jerusalem',holder:'Patriarch of Jerusalem',province:'In Communion with the Insular Church',nation:'',status:'filled',type:'patriarch',faction:'orthodox',note:'Guardian of the Holy Places',group:'orthodox'},
+        {name:'Antioch',lat:36.20,lng:36.16,rank:'Patriarchate of Antioch',holder:'Patriarch of Antioch',province:'In Communion with the Insular Church',nation:'',status:'filled',type:'patriarch',faction:'orthodox',note:'Ancient See of St. Peter',group:'orthodox'},
+        {name:'Alexandria',lat:31.20,lng:29.92,rank:'Coptic Patriarchate',holder:'Coptic Patriarch of Alexandria',province:'Miaphysite · Not in Communion',nation:'',status:'filled',type:'patriarch',faction:'coptic',note:'Apostolic succession recognised — Miaphysite; not in communion with the Insular Church',group:'orthodox'},
       ];
 
-      // ======== PROVINCE BOUNDS (for fly-to) ========
-      var PROV_BOUNDS = {};
-      sees.forEach(function(s) {
-        var k = s.group||'other';
-        var lf = geo2leaf(s.lat, s.lng);
-        if (!PROV_BOUNDS[k]) PROV_BOUNDS[k]={minY:lf[0],maxY:lf[0],minX:lf[1],maxX:lf[1]};
+      // ======== TERRITORY DATA ========
+      var INSULAR_BORDERS = {
+        ireland:{color:P.primacy,weight:2.5,dash:'8,4',coords:[[55.3,-6.1],[55.1,-5.8],[54.6,-5.4],[54.1,-5.5],[53.4,-5.9],[52.8,-6.1],[52.0,-6.9],[51.5,-8.3],[51.4,-10.0],[52.3,-10.3],[53.5,-10.1],[54.5,-8.5],[55.4,-7.2],[55.3,-6.1]],closed:true},
+        scotlandBorder:{color:'#5e3a7e',weight:2.5,dash:'10,5',coords:[[55.75,-2.0],[55.35,-2.6],[55.0,-3.2],[54.9,-5.0]]},
+        northumbriaSouth:{color:'#1e3a6e',weight:2,dash:'8,4',coords:[[53.5,-0.2],[53.4,-1.6],[53.2,-2.9]]},
+        walesBorder:{color:P.gold,weight:2.5,dash:'10,4',coords:[[53.25,-2.7],[52.7,-3.0],[52.0,-3.2],[51.5,-3.0]]},
+        // Kingdom of Denmark — outline of Insular territory (Jutland + islands + Scania + Hedeby to Lübeck)
+        denmark:{color:'#5e3a7e',weight:2.5,dash:'8,4',coords:[
+          [57.6,10.0],[57.5,8.5],[55.5,8.0],[54.3,8.5],[54.0,9.5],[53.7,10.5],[53.7,11.5],
+          [54.3,12.5],[54.5,13.5],[55.3,13.5],[55.5,14.0],[55.5,13.0],[55.7,12.6],[56.0,12.5],
+          [56.2,11.5],[56.5,10.5],[57.0,10.5],[57.6,10.0]
+        ],closed:true},
+        // Kingdom of Norway — South Norway outline
+        norway:{color:'#5e3a7e',weight:2.5,dash:'8,4',coords:[
+          [62.5,5.8],[62.0,5.2],[61.2,5.0],[60.8,5.0],[60.4,5.5],[59.9,10.7],[59.5,10.5],
+          [59.0,10.5],[58.5,11.2],[58.0,11.0],[57.8,10.5],[57.5,10.2],[57.7,9.5],[57.5,8.8],
+          [57.0,8.2],[56.5,8.1],[55.8,8.3],[55.4,8.1],[54.8,8.5],
+          [54.3,8.5],[54.0,9.5],[57.5,10.2],[58.0,11.0],[58.9,10.8],[59.9,10.7],
+          [62.5,5.8]
+        ],closed:true},
+      };
+      // ======== TERRITORY DATA (derived from server data + Discord hierarchy intel) ========
+      // Clementine Papacy (Clement VII) — actual patron nations (excluding false claims on Insular territory)
+      var CLEMENTINE_T = [
+        {label:'House of Valois (France)',coords:[[41.98,1.38],[43.66,-0.32],[45.67,-1.75],[49.78,-3.03],[51.7,4.62],[51.02,6.81]]},
+        {label:'Kingdom of Italy',coords:[[44.0,7.5],[46.0,7.5],[46.0,13.0],[44.5,12.5],[43.0,11.5],[42.5,11.0],[44.0,7.5]]},
+        {label:'Kingdom of Spain (Castile)',coords:[[37.0,-8.0],[37.5,-2.0],[40.0,-1.0],[43.5,-2.5],[43.5,-7.0],[42.5,-9.0],[38.5,-9.5],[37.0,-8.0]]},
+        {label:'Crown of Aragon',coords:[[36.98,0.1],[40.33,-0.67],[43.53,0.31],[42.0,3.0],[40.18,1.08]]},
+        {label:'Duchy of Saxony',coords:[[51.96,7.1],[54.18,6.94],[54.95,10.19],[52.73,10.35]]},
+        {label:'Austria',coords:[[46.34,15.93],[49.26,15.77],[49.76,17.13],[46.84,17.3]]},
+        {label:'Teutonic Order',coords:[[52.28,17.57],[54.86,17.43],[55.96,22.01],[53.38,22.15]]},
+        {label:'Kingdom of Poland (Clementine claim)',coords:[[49.5,18.0],[52.5,17.0],[54.0,20.0],[52.5,24.0],[49.0,23.0],[48.5,20.0]]},
+        {label:'Duchy of Lithuania (Clementine claim)',coords:[[53.5,23.0],[56.0,21.0],[56.5,26.0],[54.0,27.0],[53.0,25.5]]},
+        {label:'Bishopric of Utrecht',coords:[[51.5,4.0],[52.5,4.0],[53.0,6.0],[51.5,6.5]]},
+        {label:'Iceland (Břevnov Monastery)',coords:[[63.0,-24.0],[66.5,-23.0],[66.5,-14.0],[63.0,-14.0]]},
+        {label:'Galicia (Břevnov Monastery)',coords:[[42.0,-9.5],[43.5,-7.0],[43.5,-5.5],[42.0,-5.5],[41.0,-7.0]]},
+        {label:'Vandal Carthage',coords:[[35.5,8.0],[37.5,8.5],[37.5,11.5],[34.0,11.5],[33.0,10.0]]},
+        {label:'Kingdom of Jerusalem (Clementine claim)',coords:[[30.5,34.0],[33.0,34.5],[33.5,36.0],[31.0,36.0],[30.0,35.0]]},
+      ];
+      // JP1 Papacy (John Paul I) — exclusive territories only
+      var JP1_T = [
+        {label:'Papal States',coords:[[36.46,10.76],[42.85,10.38],[45.01,12.28],[40.92,15.1]]},
+        {label:'Malta',coords:[[33.62,10.4],[37.79,11.8],[37.4,14.43],[35.4,13.31]]},
+        {label:'Great Bohemia',coords:[[47.08,13.13],[49.65,12.8],[50.85,15.22],[48.28,15.55]]},
+        {label:'Kingdom of León',coords:[[41.21,-6.4],[43.34,-6.4],[43.34,-4.27],[41.21,-4.27]]},
+        {label:'Silesia (JP1 claim)',coords:[[49.5,15.5],[51.5,15.0],[52.0,18.0],[50.0,18.5]]},
+      ];
+      // CONTESTED TERRITORIES — both Clement VII AND John Paul I claim jurisdiction
+      var OVERLAP_T = [
+        {label:'Venice — CONTESTED (Clement VII & JP1)',coords:[[44.18,11.39],[46.31,11.39],[46.31,13.52],[44.18,13.52]]},
+        {label:'Poland — CONTESTED (Clement VII & JP1)',coords:[[49.5,18.0],[52.5,17.0],[54.0,20.0],[52.5,24.0],[49.0,23.0],[48.5,20.0]]},
+        {label:'Antioch — CONTESTED (Clement VII & JP1)',coords:[[34.5,35.0],[37.5,35.5],[37.5,38.0],[34.5,37.5]]},
+      ];
+      // Byzantine Empire c.1170 — historical jurisdictional boundary
+      var BYZANTINE = {
+        label:'Patriarchate of Constantinople — Byzantine Empire c. 1170',color:P.orthodox,
+        coords:[[39.5,20.0],[40.5,19.5],[42.0,19.0],[43.5,20.0],[44.5,24.0],[44.0,26.0],[43.0,28.5],[42.0,28.0],[41.3,29.0],[41.0,30.0],[42.0,33.0],[42.0,35.0],[41.0,37.0],[39.5,40.0],[38.5,42.0],[37.5,42.0],[36.5,40.0],[36.0,36.0],[36.5,34.0],[36.8,30.0],[37.0,29.0],[37.5,27.5],[38.0,24.0],[37.5,23.5],[36.5,22.5],[36.8,21.8],[37.5,21.5],[38.8,21.0],[39.5,20.0]]
+      };
+      // Orthodox Patriarchates + patron nations from Discord data
+      var OTHER_ORTHODOX = [
+        {label:'Patriarchate of Jerusalem / The Holy Sepulchre',color:P.orthodox,coords:[[30.0,34.0],[33.5,34.5],[33.5,36.5],[31.0,36.0],[29.5,34.5]]},
+        {label:'Patriarchate of Antioch',color:P.orthodox,coords:[[37.5,35.5],[37.5,37.5],[34.5,37.0],[35.0,35.0],[37.5,35.5]]},
+        {label:'Coptic See of Alexandria',color:P.coptic,coords:[[31.5,25.0],[31.5,34.0],[28.0,33.0],[24.0,29.5],[30.0,25.5],[31.5,25.0]]},
+        {label:'Kingdom of Cyprus (Orthodox patron)',color:P.orthodox,coords:[[34.2,32.0],[36.0,32.0],[36.0,35.0],[34.2,35.0]]},
+        {label:'Grand Principality of Kiev (Orthodox patron)',color:P.orthodox,coords:[[48.5,28.0],[52.5,28.0],[53.0,33.0],[50.0,36.0],[47.5,33.0]]},
+        {label:'Empire of Abyssinia (Orthodox patron)',color:P.orthodox,coords:[[7.0,35.0],[15.0,35.0],[15.0,43.0],[7.0,43.0]]},
+      ];
+      var FRANCE_FUTURE = [
+        {label:'Province of Normandy (Future)',coords:[[51.0,0.5],[51.0,2.0],[49.0,2.5],[48.5,-1.5],[50.0,-1.5],[51.0,0.5]]},
+        {label:'Province of Aquitaine (Future)',coords:[[48.5,-1.5],[48.5,1.0],[45.0,0.5],[43.0,-1.5],[46.0,-2.0],[48.5,-1.5]]},
+        {label:'Province of Burgundy (Future)',coords:[[48.5,1.0],[49.0,2.5],[49.5,5.0],[45.5,6.5],[43.0,2.5],[45.5,1.5],[48.5,1.0]]},
+      ];
+      // Major non-Insular cities (capitals and key cities only)
+      var MAJOR_CITIES = [
+        {name:'Paris',lat:48.93,lng:1.42,nation:'House of Valois',faction:'clementine',capital:true,note:'Capital of the House of Valois'},
+        {name:'Rome',lat:41.70,lng:12.76,nation:'Papal States',faction:'clementine',capital:true,note:'See of Clement VII (Invalid)'},
+        {name:'Valletta',lat:36.96,lng:13.76,nation:'Malta',faction:'jp1',capital:true,note:'See of John Paul I (Invalid)'},
+        {name:'Constantinople',lat:40.99,lng:28.82,nation:'Eastern Roman Empire',faction:'orthodox',capital:true,note:'Ecumenical Patriarchate · In Communion'},
+        {name:'Tbilisi',lat:41.38,lng:45.09,nation:'Kingdom of Georgia',faction:'orthodox',capital:false,note:'Kingdom of Georgia'},
+        {name:'Berlin',lat:52.48,lng:12.93,nation:'Brandenburg',faction:'neutral',capital:true},
+        {name:'Prague',lat:49.49,lng:14.58,nation:'Holy Roman Empire',faction:'neutral',capital:true,note:'Capital of the HRE'},
+        {name:'Wien',lat:47.83,lng:17.08,nation:'Austria',faction:'clementine',capital:true,note:'Capital of Austria'},
+        {name:'Zaragoza',lat:41.49,lng:-0.96,nation:'Crown of Aragon',faction:'clementine',capital:true},
+        {name:'Madrid',lat:40.49,lng:-3.79,nation:'Crown of Castile',faction:'clementine',capital:true,note:'Kingdom of Spain — Clementine patron'},
+        {name:'Lisbon',lat:38.84,lng:-9.32,nation:'Kingdom of Portugal',faction:'neutral',capital:true},
+        {name:'Venice',lat:45.25,lng:12.46,nation:'Serenissima Respublica',faction:'contested',capital:true,note:'CONTESTED — Both Clement VII & JP1 claim jurisdiction'},
+        {name:'Antioch',lat:36.78,lng:36.21,nation:'Principality of Antioch',faction:'contested',capital:true,note:'CONTESTED — Both Clement VII & JP1 claim jurisdiction'},
+        {name:'Kiev',lat:51.01,lng:30.16,nation:'Grand Principality of Kiev',faction:'orthodox',capital:true,note:'Orthodox patron — Grand Principality of Kiev'},
+        {name:'Moskva',lat:55.21,lng:39.08,nation:'Grand Duchy of Moscow',faction:'neutral',capital:true},
+        {name:'Baghdad',lat:33.70,lng:44.20,nation:'Abbasid Caliphate',faction:'neutral',capital:true},
+        {name:'Cairo',lat:31.19,lng:31.26,nation:'Abbasid Caliphate',faction:'neutral',capital:false},
+        {name:'Athens',lat:38.29,lng:23.73,nation:'Eastern Roman Empire',faction:'orthodox',capital:false},
+        {name:'Thessaloniki',lat:40.72,lng:22.41,nation:'Eastern Roman Empire',faction:'orthodox',capital:false},
+        {name:'Stockholm',lat:60.89,lng:17.63,nation:'Kingdom of Sweden',faction:'neutral',capital:true},
+        {name:'Malbork',lat:53.71,lng:19.10,nation:'Teutonic Order',faction:'clementine',capital:true},
+        {name:'Cologne',lat:50.86,lng:7.25,nation:'Lotharingia',faction:'clementine',capital:true,note:'Under House of Valois'},
+        {name:'Bremen',lat:53.19,lng:8.35,nation:'Duchy of Saxony',faction:'clementine',capital:true},
+        {name:'Naples',lat:40.99,lng:14.31,nation:'Papal States',faction:'clementine',capital:false},
+        {name:'León',lat:42.28,lng:-5.34,nation:'Kingdom of León',faction:'jp1',capital:true},
+        {name:'Litomerice',lat:48.54,lng:14.28,nation:'Great Bohemia',faction:'jp1',capital:true,note:'Capital of Great Bohemia'},
+        {name:'Buda',lat:47.37,lng:18.87,nation:'Kingdom of Hungary',faction:'neutral',capital:true},
+        {name:'Plovdiv',lat:42.19,lng:24.67,nation:'Bulgarian Empire',faction:'neutral',capital:true},
+        {name:'Vilnius',lat:54.70,lng:25.10,nation:'Grand Duchy of Lithuania',faction:'clementine',capital:true,note:'Clementine patron'},
+        {name:'Jerusalem',lat:32.42,lng:35.18,nation:'Holy City',faction:'clementine',capital:false,note:'Claimed by Clementine Papacy — The Holy City'},
+        {name:'Alexandria',lat:31.83,lng:29.96,nation:'Coptic See',faction:'coptic',capital:false,note:'Miaphysite · Apostolic · Not in Communion'},
+        {name:'Córdoba',lat:37.88,lng:-5.02,nation:'Al-Andalus',faction:'neutral',capital:true},
+        {name:'Reykjavik',lat:64.15,lng:-21.90,nation:'Kingdom of Iceland',faction:'clementine',capital:true,note:'Under Břevnov Monastery — Clementine jurisdiction'},
+        {name:'Halych',lat:49.0,lng:24.5,nation:'Polish-Galician Commonwealth',faction:'clementine',capital:true,note:'Clementine patron — Kingdom of Poland'},
+      ];
+
+      // ======== PROVINCE BOUNDS for fly-to ========
+      var PROV_BOUNDS={};
+      sees.forEach(function(s){
+        var k=s.group||'other';
+        if(!PROV_BOUNDS[k])PROV_BOUNDS[k]={minLat:s.lat,maxLat:s.lat,minLng:s.lng,maxLng:s.lng};
         var b=PROV_BOUNDS[k];
-        b.minY=Math.min(b.minY,lf[0]); b.maxY=Math.max(b.maxY,lf[0]);
-        b.minX=Math.min(b.minX,lf[1]); b.maxX=Math.max(b.maxX,lf[1]);
+        b.minLat=Math.min(b.minLat,s.lat);b.maxLat=Math.max(b.maxLat,s.lat);
+        b.minLng=Math.min(b.minLng,s.lng);b.maxLng=Math.max(b.maxLng,s.lng);
       });
 
       // ==================================================================
-      //  BOUNDARY & TERRITORY DATA
+      //  MAP INITIALIZATION — standard Leaflet CRS, no tiles, no images
       // ==================================================================
-
-      // --- INSULAR CHURCH BOUNDARY LINES ---
-      var BOUNDARIES = {
-        ireland: {
-          label: 'Primacy of Ireland', color: C.primacy, weight: 2.5, dash: '8,4',
-          coords: [[55.3,-6.1],[55.1,-5.8],[54.6,-5.4],[54.1,-5.5],[53.4,-5.9],[52.8,-6.1],[52.2,-6.3],[52.0,-6.9],[51.8,-7.5],[51.5,-8.3],[51.4,-9.5],[51.4,-10.0],[51.8,-10.5],[52.3,-10.3],[52.8,-10.0],[53.2,-9.9],[53.5,-10.1],[54.0,-10.0],[54.5,-8.5],[55.1,-7.5],[55.4,-7.2],[55.4,-6.5],[55.3,-6.1]],
-          closed: true
-        },
-        isleOfMan: {
-          label: 'Isle of Man', color: C.primacy, weight: 2, dash: '6,3',
-          coords: [[54.42,-4.30],[54.08,-4.30],[54.05,-4.85],[54.38,-4.85],[54.42,-4.30]],
-          closed: true
-        },
-        scotlandBorder: {
-          label: 'Archdiocese of Scotland (Southern Border)', color: '#5e3a7e', weight: 2.5, dash: '10,5',
-          coords: [[55.75,-2.0],[55.6,-2.4],[55.35,-2.6],[55.1,-2.8],[55.0,-3.2],[54.95,-3.8],[54.9,-5.0]]
-        },
-        northumbriaSouth: {
-          label: 'Archdiocese of Northumbria (Southern Border)', color: '#1e3a6e', weight: 2, dash: '8,4',
-          coords: [[53.5,-0.2],[53.5,-1.1],[53.4,-1.6],[53.3,-2.3],[53.2,-2.9]]
-        },
-        walesBorder: {
-          label: 'Primacy of Wales (Eastern Border)', color: C.gold, weight: 2.5, dash: '10,4',
-          coords: [[53.25,-2.7],[53.0,-2.8],[52.7,-3.0],[52.3,-3.1],[52.0,-3.2],[51.7,-3.1],[51.5,-3.0]]
-        }
-      };
-
-      // --- FRENCH FUTURE ARCHDIOCESE OUTLINES ---
-      var FRANCE_REGIONS = [
-        { label: 'Province of Normandy (Future)', color: C.gold, dash: '4,6',
-          coords: [[51.0,0.5],[51.0,2.0],[50.0,2.5],[49.0,2.5],[48.5,1.0],[48.5,-1.5],[49.0,-2.0],[50.0,-1.5],[51.0,0.5]] },
-        { label: 'Province of Aquitaine (Future)', color: C.gold, dash: '4,6',
-          coords: [[48.5,-1.5],[48.5,1.0],[47.5,1.5],[46.5,1.0],[45.0,0.5],[44.0,-0.5],[43.5,-1.0],[43.0,-1.5],[44.0,-1.8],[46.0,-2.0],[48.0,-2.5],[48.5,-1.5]] },
-        { label: 'Province of Burgundy (Future)', color: C.gold, dash: '4,6',
-          coords: [[48.5,1.0],[49.0,2.5],[49.5,5.0],[48.5,7.5],[47.0,7.0],[45.5,6.5],[44.0,5.5],[43.5,4.0],[43.0,2.5],[44.0,1.5],[45.5,1.5],[46.5,1.0],[47.5,1.5],[48.5,1.0]] }
-      ];
-
-      // --- CLEMENTINE PAPACY TERRITORIES ---
-      var CLEMENTINE_TERRITORIES = [
-        { label: 'House of Valois (France)', coords: [[51.0,-1.8],[50.5,2.5],[49.5,5.0],[48.5,8.0],[47.0,7.0],[45.5,6.5],[44.0,5.5],[43.0,3.0],[43.0,0.5],[43.5,-1.5],[44.5,-1.0],[46.5,-2.0],[48.5,-3.5],[50.0,-2.0],[51.0,-1.8]] },
-        { label: 'Kingdom of Aragon', coords: [[42.8,0.0],[42.5,2.0],[41.5,3.2],[40.0,3.5],[39.0,2.5],[38.5,0.0],[39.0,-1.0],[40.5,-1.5],[42.0,-0.5],[42.8,0.0]] },
-        { label: 'Duchy of Saxony', coords: [[53.5,9.5],[53.5,13.5],[52.0,14.0],[50.5,13.0],[50.5,10.0],[51.5,9.0],[53.5,9.5]] },
-        { label: 'Austria', coords: [[48.5,13.0],[48.5,17.0],[47.0,16.5],[46.5,14.5],[46.8,12.5],[47.5,12.0],[48.5,13.0]] },
-        { label: 'Teutonic Order', coords: [[56.0,18.0],[56.0,22.0],[54.5,22.5],[53.5,20.5],[54.0,18.5],[56.0,18.0]] }
-      ];
-
-      // --- JP1 PAPACY TERRITORIES ---
-      var JP1_TERRITORIES = [
-        { label: 'Papal States', coords: [[43.8,11.0],[43.5,13.5],[42.5,14.0],[41.5,14.5],[41.0,13.5],[41.8,12.0],[42.5,11.5],[43.8,11.0]] },
-        { label: 'Republic of Venice', coords: [[46.5,11.0],[46.5,13.5],[45.5,14.0],[44.5,12.5],[45.0,11.0],[46.5,11.0]] },
-        { label: 'Great Bohemia', coords: [[51.5,12.0],[51.0,16.0],[49.5,17.0],[48.5,16.0],[48.5,13.0],[50.0,12.0],[51.5,12.0]] },
-        { label: 'Kingdom of León', coords: [[43.5,-5.5],[43.5,-8.5],[42.0,-8.8],[41.0,-8.0],[41.5,-5.5],[42.5,-5.0],[43.5,-5.5]] },
-        { label: 'Malta', coords: [[36.2,14.0],[36.2,15.0],[35.6,15.0],[35.6,14.0],[36.2,14.0]] }
-      ];
-
-      // --- ORTHODOX PATRIARCHATE TERRITORIES ---
-      var ORTHODOX_TERRITORIES = [
-        { label: 'Patriarchate of Constantinople — Byzantine Empire c. 1170', color: C.orthodox,
-          coords: [
-            // Adriatic coast up through Balkans
-            [39.5,20.0],[40.5,19.5],[42.0,19.0],[42.5,18.5],
-            // Danube frontier
-            [43.5,20.0],[44.0,22.0],[44.5,24.0],[44.0,26.0],[43.5,28.0],
-            // Black Sea coast
-            [43.0,28.5],[42.5,29.0],[41.5,29.5],[41.0,30.0],
-            // Northern Anatolia coast
-            [42.0,33.0],[41.5,36.0],[40.5,38.0],[39.5,40.0],
-            // Eastern Anatolia frontier
-            [38.5,41.0],[37.5,40.5],[37.0,39.0],
-            // Southern Anatolia coast
-            [36.5,36.5],[36.0,34.0],[36.5,32.0],[37.0,29.0],[37.5,27.5],
-            // Aegean / Crete
-            [36.5,26.0],[35.0,25.5],[35.0,24.0],[36.0,22.5],
-            // Peloponnese / Western Greece
-            [36.5,22.0],[37.5,21.5],[38.0,21.0],[39.0,20.5],[39.5,20.0]
-          ] },
-        { label: 'Patriarchate of Jerusalem', color: C.orthodox,
-          coords: [[33.5,34.5],[33.5,36.0],[31.0,35.5],[29.5,34.5],[30.5,34.0],[33.5,34.5]] },
-        { label: 'Patriarchate of Antioch', color: C.orthodox,
-          coords: [[37.5,35.5],[37.5,37.5],[36.0,38.0],[34.5,37.0],[34.0,36.0],[35.0,35.0],[37.5,35.5]] },
-        { label: 'Coptic See of Alexandria', color: C.coptic,
-          coords: [[31.5,25.0],[31.5,34.0],[30.0,33.5],[28.0,33.0],[25.0,34.0],[24.0,33.0],[24.0,29.5],[27.0,27.0],[30.0,25.5],[31.5,25.0]] }
-      ];
-
-      // ==================================================================
-      //  MAP INITIALIZATION
-      // ==================================================================
-      var bounds = [[0, 0], [IMG_H, IMG_W]];
       var map = L.map('ecclesmap-container', {
-        crs: L.CRS.Simple,
-        center: [IMG_H*0.6, IMG_W*0.28],
-        zoom: 0,
-        minZoom: -2,
-        maxZoom: 4,
-        maxBounds: [[-200, -200], [IMG_H+200, IMG_W+200]],
+        center: [50.0, 8.0],
+        zoom: 4,
+        minZoom: 3,
+        maxZoom: 9,
+        maxBounds: [[20,-30],[72,55]],
         maxBoundsViscosity: 0.9,
-        zoomSnap: 0.25,
+        zoomSnap: 0.5,
         zoomDelta: 0.5,
         attributionControl: true
       });
-      L.imageOverlay(MAP_IMG, bounds).addTo(map);
       map.attributionControl.setPrefix('');
-      map.attributionControl.addAttribution('Mvindicraft · The Insular Church');
+      map.attributionControl.addAttribution('☩ The Insular Church of Mvindicraft');
 
-      // ======== TERRITORY LAYERS ========
-      // Clementine territories (red hatching)
+      // ======== DRAW GEOGRAPHY ========
+      // 1. Land polygons
+      var geoLayer = L.layerGroup().addTo(map);
+      Object.keys(LAND).forEach(function(k) {
+        L.polygon(LAND[k], {
+          color: P.landStroke, weight: 1.5, fillColor: P.land, fillOpacity: 1,
+          className: 'land-polygon'
+        }).addTo(geoLayer);
+      });
+      // Open coastlines (N.Africa, Middle East) — draw as thick land-fill polylines
+      Object.keys(COAST_OPEN).forEach(function(k) {
+        L.polyline(COAST_OPEN[k], {
+          color: P.land, weight: 8, opacity: 0.9, lineCap: 'round', lineJoin: 'round'
+        }).addTo(geoLayer);
+        L.polyline(COAST_OPEN[k], {
+          color: P.landStroke, weight: 1.5, opacity: 0.6, lineCap: 'round'
+        }).addTo(geoLayer);
+      });
+
+      // 2. Rivers
+      var riverLayer = L.layerGroup().addTo(map);
+      Object.keys(RIVERS).forEach(function(k) {
+        L.polyline(RIVERS[k], {
+          color: P.river, weight: 1.5, opacity: 0.5, dashArray: '4,3', lineCap: 'round'
+        }).addTo(riverLayer);
+      });
+
+      // 3. Sea labels
+      var seaLabelLayer = L.layerGroup().addTo(map);
+      SEA_LABELS.forEach(function(sl) {
+        L.marker([sl[1], sl[2]], {
+          icon: L.divIcon({
+            className: '', iconSize: [200, 24], iconAnchor: [100, 12],
+            html: '<div style="text-align:center;font-family:Cormorant Garamond,serif;font-size:'+sl[3]+'px;font-style:italic;color:rgba(140,170,210,0.35);letter-spacing:0.15em;white-space:nowrap;pointer-events:none;">'+sl[0]+'</div>'
+          }), interactive: false
+        }).addTo(seaLabelLayer);
+      });
+
+      // ======== TERRITORY OVERLAYS (toggleable) ========
       var clementineLayer = L.layerGroup();
-      CLEMENTINE_TERRITORIES.forEach(function(t) {
-        L.polygon(geoPath(t.coords), {
-          color: C.clementine, weight: 1.5, dashArray: '6,4',
-          fillColor: C.clementine, fillOpacity: 0.12, interactive: true
-        }).bindPopup('<div class="popup-rank" style="background:'+C.clementine+';">CLEMENTINE PAPACY</div><div class="popup-title">'+t.label+'</div><div class="popup-holder"><em style="color:'+C.clementine+';">Allegiance to Pope Clement VII (Invalid)</em></div>').addTo(clementineLayer);
+      CLEMENTINE_T.forEach(function(t) {
+        L.polygon(t.coords, {color:P.clementine,weight:1.5,dashArray:'6,4',fillColor:P.clementine,fillOpacity:0.12,interactive:true
+        }).bindPopup('<div class="popup-rank" style="background:'+P.clementine+';">CLEMENTINE PAPACY</div><div class="popup-title">'+t.label+'</div><div class="popup-holder"><em style="color:'+P.clementine+';">Allegiance to Clement VII (Invalid)</em></div>').addTo(clementineLayer);
       });
       clementineLayer.addTo(map);
 
-      // JP1 territories (purple hatching)
       var jp1Layer = L.layerGroup();
-      JP1_TERRITORIES.forEach(function(t) {
-        L.polygon(geoPath(t.coords), {
-          color: C.jp1, weight: 1.5, dashArray: '6,4',
-          fillColor: C.jp1, fillOpacity: 0.12, interactive: true
-        }).bindPopup('<div class="popup-rank" style="background:'+C.jp1+';">JP1 PAPACY</div><div class="popup-title">'+t.label+'</div><div class="popup-holder"><em style="color:'+C.jp1+';">Allegiance to Pope John Paul I (Invalid)</em></div>').addTo(jp1Layer);
+      JP1_T.forEach(function(t) {
+        L.polygon(t.coords, {color:P.jp1,weight:1.5,dashArray:'6,4',fillColor:P.jp1,fillOpacity:0.12,interactive:true
+        }).bindPopup('<div class="popup-rank" style="background:'+P.jp1+';">JP1 PAPACY</div><div class="popup-title">'+t.label+'</div><div class="popup-holder"><em style="color:'+P.jp1+';">Allegiance to John Paul I (Invalid)</em></div>').addTo(jp1Layer);
       });
       jp1Layer.addTo(map);
 
-      // Orthodox territories (green outline)
+      // Contested territories — both Clement VII AND JP1 claim (orange striped)
+      var contestedLayer = L.layerGroup();
+      OVERLAP_T.forEach(function(t) {
+        L.polygon(t.coords, {color:P.contested,weight:2.5,dashArray:'4,4',fillColor:P.contested,fillOpacity:0.18,interactive:true
+        }).bindPopup('<div class="popup-rank" style="background:'+P.contested+';">⚔ CONTESTED JURISDICTION</div><div class="popup-title">'+t.label+'</div><div class="popup-holder"><em style="color:'+P.contested+';">Both Clement VII and John Paul I claim spiritual authority over this territory. Neither holds valid orders.</em></div>').addTo(contestedLayer);
+      });
+      contestedLayer.addTo(map);
+
       var orthodoxLayer = L.layerGroup();
-      ORTHODOX_TERRITORIES.forEach(function(t) {
-        var communionText = t.color===C.coptic ? '<em>Apostolic succession recognised · Miaphysite · Not in communion</em>' : '<strong>In Communion with the Insular Church</strong>';
-        L.polygon(geoPath(t.coords), {
-          color: t.color||C.orthodox, weight: 2, dashArray: '10,6',
-          fillColor: t.color||C.orthodox, fillOpacity: 0.08, interactive: true
-        }).bindPopup('<div class="popup-rank" style="background:'+(t.color||C.orthodox)+';">PATRIARCHATE</div><div class="popup-title">'+t.label+'</div><div class="popup-holder" style="color:'+(t.color||C.orthodox)+';">'+communionText+'</div>').addTo(orthodoxLayer);
+      L.polygon(BYZANTINE.coords, {color:P.orthodox,weight:2,dashArray:'10,6',fillColor:P.orthodox,fillOpacity:0.08,interactive:true
+      }).bindPopup('<div class="popup-rank" style="background:'+P.orthodox+';">PATRIARCHATE</div><div class="popup-title">'+BYZANTINE.label+'</div><div class="popup-holder" style="color:'+P.orthodox+';"><strong>In Communion with the Insular Church</strong></div>').addTo(orthodoxLayer);
+      OTHER_ORTHODOX.forEach(function(t) {
+        var ct = t.color===P.coptic ? '<em>Apostolic succession recognised · Miaphysite · Not in communion</em>' : '<strong>In Communion with the Insular Church</strong>';
+        L.polygon(t.coords, {color:t.color,weight:2,dashArray:'10,6',fillColor:t.color,fillOpacity:0.08,interactive:true
+        }).bindPopup('<div class="popup-rank" style="background:'+t.color+';">PATRIARCHATE</div><div class="popup-title">'+t.label+'</div><div class="popup-holder" style="color:'+t.color+';">'+ct+'</div>').addTo(orthodoxLayer);
       });
       orthodoxLayer.addTo(map);
 
-      // ======== BOUNDARY LINES ========
+      // Insular borders
       var boundaryLayer = L.layerGroup();
-      Object.keys(BOUNDARIES).forEach(function(key) {
-        var b = BOUNDARIES[key];
-        var path = geoPath(b.coords);
-        var opts = { color:b.color, weight:b.weight, dashArray:b.dash, fill:false, interactive:false };
-        if (b.closed) { L.polygon(path, opts).addTo(boundaryLayer); }
-        else { L.polyline(path, opts).addTo(boundaryLayer); }
+      Object.keys(INSULAR_BORDERS).forEach(function(k) {
+        var b = INSULAR_BORDERS[k];
+        var opts = {color:b.color,weight:b.weight,dashArray:b.dash,fill:false,interactive:false};
+        if(b.closed) L.polygon(b.coords, opts).addTo(boundaryLayer);
+        else L.polyline(b.coords, opts).addTo(boundaryLayer);
       });
-      // French future regions
-      FRANCE_REGIONS.forEach(function(r) {
-        L.polygon(geoPath(r.coords), {
-          color: r.color, weight: 1.5, dashArray: r.dash,
-          fillColor: r.color, fillOpacity: 0.04, interactive: true
-        }).bindPopup('<div class="popup-rank" style="background:'+C.gold+';">FUTURE ARCHDIOCESE</div><div class="popup-title">'+r.label+'</div><div class="popup-holder"><em style="color:#777;">To be established upon expansion into Western Europe</em></div>').addTo(boundaryLayer);
+      FRANCE_FUTURE.forEach(function(r) {
+        L.polygon(r.coords, {color:P.gold,weight:1.5,dashArray:'4,6',fillColor:P.gold,fillOpacity:0.04,interactive:true
+        }).bindPopup('<div class="popup-rank" style="background:'+P.gold+';">FUTURE ARCHDIOCESE</div><div class="popup-title">'+r.label+'</div>').addTo(boundaryLayer);
       });
       boundaryLayer.addTo(map);
 
       // ======== MARKERS ========
       var allMarkers = [];
       sees.forEach(function(see) {
-        var lf = geo2leaf(see.lat, see.lng);
-        var m = L.marker(lf, { icon: createIcon(see) });
-        m.bindPopup(buildPopup(see), { maxWidth: 280, closeButton: true });
+        var m = L.marker([see.lat, see.lng], {icon: createIcon(see)});
+        m.bindPopup(buildPopup(see), {maxWidth:280,closeButton:true});
         m.seeData = see;
         m.addTo(map);
         allMarkers.push(m);
       });
 
-      // ======== NAME LABELS for Primates & Patriarchs ========
+      // Name labels for Primates/Patriarchs/Rival Popes
       var labelLayer = L.layerGroup().addTo(map);
-      sees.filter(function(s){ return s.rank==='primacy'||s.type==='patriarch'||s.type==='rival_pope'; }).forEach(function(s) {
-        var lf = geo2leaf(s.lat, s.lng);
-        var col = s.type==='rival_pope'?(s.faction==='clementine'?C.clementine:C.jp1):
-                  s.type==='patriarch'?(s.faction==='coptic'?C.coptic:C.orthodox):C.gold;
-        var fs = s.type==='rival_pope'||s.type==='patriarch'?'10px':'11px';
-        L.marker([lf[0]-22, lf[1]], {
-          icon: L.divIcon({
-            className:'', iconSize:[180,22], iconAnchor:[90,0],
-            html:'<div style="text-align:center;font-family:Cinzel,serif;font-size:'+fs+';color:'+col+';text-shadow:0 0 4px #000,0 0 8px #000,1px 1px 3px #000;letter-spacing:0.08em;white-space:nowrap;pointer-events:none;font-weight:700;">'+s.name+'</div>'
-          }), interactive:false
+      sees.filter(function(s){return s.rank==='primacy'||s.type==='patriarch'||s.type==='rival_pope';}).forEach(function(s) {
+        var col=s.type==='rival_pope'?(s.faction==='clementine'?P.clementine:P.jp1):s.type==='patriarch'?(s.faction==='coptic'?P.coptic:P.orthodox):P.gold;
+        L.marker([s.lat-0.35, s.lng], {
+          icon:L.divIcon({className:'',iconSize:[180,22],iconAnchor:[90,0],
+          html:'<div style="text-align:center;font-family:Cinzel,serif;font-size:10px;color:'+col+';text-shadow:0 0 3px rgba(26,40,64,0.9),0 0 6px rgba(26,40,64,0.7);letter-spacing:0.08em;white-space:nowrap;pointer-events:none;font-weight:700;">'+s.name+'</div>'}),interactive:false
         }).addTo(labelLayer);
       });
 
-      // ======== CONTROLS ========
-      // Filter by rank
-      document.getElementById('mapFilters').addEventListener('click', function(e) {
-        var btn = e.target.closest('.map-filter-btn');
-        if (!btn) return;
-        this.querySelectorAll('.map-filter-btn').forEach(function(b){b.classList.remove('active');});
-        btn.classList.add('active');
-        var f = btn.dataset.filter;
-        allMarkers.forEach(function(m) {
-          var s = m.seeData;
-          var show = f==='all' ? true
-            : f==='primacy'       ? s.rank==='primacy'
-            : f==='archbishopric' ? s.rank==='archbishopric'
-            : f==='diocese'       ? (s.rank==='diocese'||s.rank==='abbey')
-            : f==='vacant'        ? (s.status!=='filled')
-            : f==='rival'        ? (s.type==='rival_pope')
-            : f==='orthodox'     ? (s.type==='patriarch')
-            : f==='nonInsular'   ? (s.type==='nonInsular')
-            : true;
-          if (show) { if (!map.hasLayer(m)) m.addTo(map); }
-          else      { if (map.hasLayer(m)) map.removeLayer(m); }
+      // ======== MAJOR NON-INSULAR CITIES (capitals + key cities) ========
+      var majorLayer = L.layerGroup().addTo(map);
+      MAJOR_CITIES.forEach(function(c) {
+        var col = c.faction==='clementine'?P.clementine:c.faction==='jp1'?P.jp1:c.faction==='orthodox'?P.orthodox:c.faction==='coptic'?P.coptic:c.faction==='contested'?P.contested:'#888';
+        var sz = c.capital ? 9 : 6;
+        var bdr = c.capital ? '2px solid rgba(240,228,200,0.7)' : '1px solid rgba(240,228,200,0.4)';
+        var m = L.marker([c.lat, c.lng], {
+          icon: L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2],popupAnchor:[0,-sz/2-4],
+            html:'<div style="width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:'+col+';border:'+bdr+';'+(c.capital?'box-shadow:0 0 4px '+col+';':'opacity:0.7;')+'"></div>'
+          })
         });
-      });
-
-      // Province fly-to
-      document.getElementById('mapProvBtns').addEventListener('click', function(e) {
-        var btn = e.target.closest('.map-prov-btn');
-        if (!btn) return;
-        this.querySelectorAll('.map-prov-btn').forEach(function(b){b.classList.remove('active');});
-        btn.classList.add('active');
-        var prov = btn.dataset.prov;
-        if (prov==='all') { map.flyToBounds(bounds, {padding:[30,30], duration:0.8}); }
-        else {
-          var b = PROV_BOUNDS[prov];
-          if (b) {
-            var pad = prov==='orthodox'||prov==='rival'?150:100;
-            map.flyToBounds([[b.minY-pad, b.minX-pad],[b.maxY+pad, b.maxX+pad]], {duration:0.8, maxZoom:2.5});
-          }
+        var popHtml = '<div class="popup-rank" style="background:'+col+';">'+(c.capital?'CAPITAL':'CITY')+'</div>';
+        popHtml += '<div class="popup-title">'+c.name+'</div>';
+        popHtml += '<div class="popup-holder" style="color:'+col+';">'+c.nation+'</div>';
+        if(c.note) popHtml += '<div style="font-size:0.82rem;color:#4a3520;margin-top:0.25rem;font-style:italic;">'+c.note+'</div>';
+        m.bindPopup(popHtml, {maxWidth:240});
+        m.addTo(majorLayer);
+        // Add name label for capitals
+        if(c.capital) {
+          L.marker([c.lat-0.3, c.lng], {
+            icon:L.divIcon({className:'',iconSize:[140,18],iconAnchor:[70,0],
+            html:'<div style="text-align:center;font-family:Cinzel,serif;font-size:8px;color:'+col+';text-shadow:0 0 3px rgba(26,40,64,0.9);letter-spacing:0.06em;white-space:nowrap;pointer-events:none;opacity:0.8;">'+c.name+'</div>'}),interactive:false
+          }).addTo(majorLayer);
         }
       });
 
-      // Toggle territory layers
-      document.getElementById('mapLayerToggles').addEventListener('change', function(e) {
-        var cb = e.target;
-        if (!cb.dataset.layer) return;
-        var layer = cb.dataset.layer==='clementine'?clementineLayer:
-                    cb.dataset.layer==='jp1'?jp1Layer:
-                    cb.dataset.layer==='orthodox'?orthodoxLayer:
-                    cb.dataset.layer==='boundaries'?boundaryLayer:null;
-        if (layer) { cb.checked ? layer.addTo(map) : map.removeLayer(layer); }
+      // ======== CONTROLS ========
+      document.getElementById('mapFilters').addEventListener('click', function(e) {
+        var btn=e.target.closest('.map-filter-btn'); if(!btn) return;
+        this.querySelectorAll('.map-filter-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        var f=btn.dataset.filter;
+        allMarkers.forEach(function(m){
+          var s=m.seeData,show=f==='all'?true:f==='primacy'?s.rank==='primacy':f==='archbishopric'?s.rank==='archbishopric':f==='diocese'?(s.rank==='diocese'||s.rank==='abbey'):f==='vacant'?s.status!=='filled':f==='rival'?s.type==='rival_pope':f==='orthodox'?s.type==='patriarch':f==='nonInsular'?s.type==='nonInsular':true;
+          if(show){if(!map.hasLayer(m))m.addTo(map);}else{if(map.hasLayer(m))map.removeLayer(m);}
+        });
       });
 
-      // Resize fix
-      var mapObs = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry){ if (entry.isIntersecting) map.invalidateSize(); });
-      }, {threshold:0.1});
+      document.getElementById('mapProvBtns').addEventListener('click', function(e) {
+        var btn=e.target.closest('.map-prov-btn'); if(!btn) return;
+        this.querySelectorAll('.map-prov-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        var prov=btn.dataset.prov;
+        if(prov==='all'){map.flyTo([50.0,8.0],4,{duration:0.8});}
+        else{
+          var b=PROV_BOUNDS[prov];
+          if(b){var pad=prov==='orthodox'||prov==='rival'?3:1.5;
+          map.flyToBounds([[b.minLat-pad,b.minLng-pad],[b.maxLat+pad,b.maxLng+pad]],{duration:0.8,maxZoom:8});}
+        }
+      });
+
+      document.getElementById('mapLayerToggles').addEventListener('change', function(e) {
+        var cb=e.target; if(!cb.dataset.layer) return;
+        var layer=cb.dataset.layer==='clementine'?clementineLayer:cb.dataset.layer==='jp1'?jp1Layer:cb.dataset.layer==='contested'?contestedLayer:cb.dataset.layer==='orthodox'?orthodoxLayer:cb.dataset.layer==='boundaries'?boundaryLayer:null;
+        if(layer){cb.checked?layer.addTo(map):map.removeLayer(layer);}
+      });
+
+      var mapObs=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){if(entry.isIntersecting)map.invalidateSize();});
+      },{threshold:0.1});
       mapObs.observe(document.getElementById('ecclesmap'));
     })();
   </script>
