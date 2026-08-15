@@ -6,7 +6,7 @@ A medieval illuminated-manuscript-inspired website for the **Insular Church of M
 
 **Territorial focus:** Ireland · Scotland · Wales · England
 
-**🔗 [Visit the Live Site](https://jcalepos146.github.io/Insular-Church-of-Mvndicraft/)**
+**🔗 [Visit the Live Site](https://jcalepos146.github.io/Insular-Church-of-Mvindicraft/)**
 
 ## Ecclesial Identity
 
